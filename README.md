@@ -14,7 +14,7 @@ All rights reserved.
 ---------------------------------------------------
 The scripts have been tested on Windows 2K8 R2, Windows 2016
 1. Install Python3.3/3.5.0 (https://www.python.org/downloads/) under C:\Python33 for "all" users.
-2. Install VMware's Perl SDK. The minimum required version is "VMware vSphere SDK for Perl 5.1".
+2. Install VMware's Perl SDK. The minimum required version is "VMware vSphere SDK for Perl 5.5".
    By default, the SDK is installed at 'C:\Program Files (x86)\Vmware'.
    Please make sure to include the SDK Path 'C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\bin' and
    "C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\lib" in "System Environment Variable" called "Path".
@@ -144,6 +144,7 @@ vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
    If you want to protect hourly, specify 'hourly' as protect-category. For manual testing use 'manual'.
 
    Note that there are different versions of script for ISCSI and FC. Use appropriately.
+   Note: access-group is the permission on the lun, just make sure the wwn has permission to access the newly created volume
 
    Press 'Add Handoff Host'.
 9. Now assign this handoff host to a LUN (LUN -> Snapshots -> Configuration -> Handoff Host).

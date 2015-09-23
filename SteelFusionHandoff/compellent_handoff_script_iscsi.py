@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# (C) Copyright 2015 Riverbed Technology, Inc
+# (C) Copyright 2014 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 
 
 ###############################################################################
-# HP EVA Snapshot Handoff Script
+# Sample Snapshot Handoff Script
 # All operations are a no-op.
 # Since we do not really create a clone, the mount operation
 # and the unmount operation are going to fail on ESX.
@@ -50,35 +50,36 @@ import os
 # Paths for VADP scripts
 PERL_EXE = r'"C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\bin\perl.exe" '
 WORK_DIR =  r'C:\rvbd_handoff_scripts'
-VADP_CLEANUP = WORK_DIR + r'\libs\vsphere\vadp_cleanup.pl'
-VADP_SETUP = WORK_DIR + r'\libs\vsphere\vadp_setup.pl'
-COMPELLENT_SCRIPT = WORK_DIR + r'\lib\compellent.ps1'
-HANDOFF_LOG_FILE = WORK_DIR + r'\log\handoff.log'
+VADP_CLEANUP = WORK_DIR + r'\vadp_cleanup.pl'
+VADP_SETUP = WORK_DIR + r'\vadp_setup.pl'
+COMPELLENT_SCRIPT = WORK_DIR + r'\compellent.ps1'
 
 def set_logger():
-    logging.basicConfig(filename= HANDOFF_LOG_FILE, level=logging.DEBUG,
+    logging.basicConfig(filename='handoff.log', level=logging.DEBUG,
                         format='%(asctime)s : %(levelname)s: %(message)s',
                          datefmt='%m/%d/%Y %I:%M:%S %p')
+
 
 def script_log(msg):
     '''
     Local logs are sent to std err
-
+	
 	msg : the log message
     '''
     sys.stderr.write(msg + "\n")
     logging.info(msg)
 
+
 def set_script_path(prefix):
     '''
 	Sets the paths accroding to the prefix.
-
+	
 	prefix : full path of directory in which the VADP scripts reside
     '''
     global WORK_DIR, VADP_CLEANUP, VADP_SETUP
     WORK_DIR = prefix
-    VADP_CLEANUP = WORK_DIR + r'\lib\vadp_cleanup.pl'
-    VADP_SETUP = WORK_DIR + r'\lib\vadp_setup.pl'
+    VADP_CLEANUP = WORK_DIR + r'\vadp_cleanup.pl'
+    VADP_SETUP = WORK_DIR + r'\vadp_setup.pl'
 
 def execute_script(cmd):
     ps_command_pref = '"cmd /c echo . | '
@@ -99,7 +100,7 @@ def check_lun(server, serial):
     '''
     Checks for the presence of lun
 
-    server : hostname/ip address
+    server : hostname/ip address 
     serial : lun serial
 
     Exits the process with code zero if it finds the lun,
@@ -113,7 +114,7 @@ def check_lun(server, serial):
     sys.exit(0)
 
 
-def create_snap(cdb, sdb, rdb, server, serial, snap_name,
+def create_snap(cdb, sdb, rdb, server, serial, snap_name, 
                 access_group, proxy_host, datacenter,
                 include_hosts, exclude_hosts,
                 category, protect_category):
@@ -144,7 +145,6 @@ def create_snap(cdb, sdb, rdb, server, serial, snap_name,
     '''
     # Check for duplicate requests, these are possible
     # if Granite Core Crashes or the Handoff host itself crashed
-    script_log('Starting create_snap')
     rdb_snap_name, replay = rdb.get_snap_info(snap_name)
     if rdb_snap_name:
         script_log("Duplicate request")
@@ -163,7 +163,7 @@ def create_snap(cdb, sdb, rdb, server, serial, snap_name,
             # Mount the snapshot on the proxy host
             mount_proxy_backup(cdb, sdb, cloned_lun_serial, snap_name,
                                access_group, proxy_host, datacenter,
-                               include_hosts, exclude_hosts)
+                               include_hosts, exclude_hosts) 
             print (snap_name)
             return
 
@@ -174,8 +174,8 @@ def create_snap(cdb, sdb, rdb, server, serial, snap_name,
     if status != 0:
         print ("Failed to create snapshot " + str(err))
         sys.exit(1)
-
-
+	
+  
     decoded = out.decode('utf-8')
     out_split = decoded.strip().split('\n')[0].split(":")[-1]
     script_log("The index is " + str(out_split))
@@ -207,7 +207,7 @@ def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
     If we are removing a protected snapshot, we un-mount and cleanup
     the cloned snapshot lun and then remove the snapshot.
     '''
-
+    
     clone_serial, protected_snap, group = sdb.get_clone_info(serial)
 
     replay = ''
@@ -221,8 +221,8 @@ def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
         # Delete the snapshot cloned lun
         delete_cloned_lun(cdb, sdb, server, serial)
 
-    # Expire the replay
-
+    # Expire the replay    
+    
     if not replay :
         s1, replay = rdb.get_snap_info(snap_name)
         script_log("The replay index is  " + replay)
@@ -233,7 +233,7 @@ def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
         if status != 0:
             print ("Failed to remove snapshot " + str(err))
             sys.exit(1)
-
+	
 
     sys.exit(0)
 
@@ -241,7 +241,7 @@ def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
 def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     '''
     Creates a lun out of a snapshot
-
+   
     cbd : credentials db
     sdb : script db
     server : the storage array
@@ -252,12 +252,9 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     Since this step is run as part of proxy backup, on errors,
     we exit with status zero so that Granite Core ACKs the Edge.
     '''
-    script_log('Starting create_snap_clone')
     out, err, status = execute_script("-operation CREATE_SNAP_AND_MOUNT -serial %s -array %s -accessgroup %s " % (serial, server, accessgroup))
     if status != 0:
-        msg = "Failed to create snapshot " + str(err)
-        script_log(msg)
-        print (msg)
+        print ("Failed to create snapshot " + str(err))
         sys.exit(1)
 
     decoded = out.decode('utf-8')
@@ -270,8 +267,8 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     if cloned_lun_serial == ':':
         print ("Failed to create snapshot lun : " + str(decoded))
         sys.exit(1)
-
-    # Store this information in a local database.
+	
+    # Store this information in a local database. 
     # This is needed because when you are running cleanup,
     # the script must find out which cloned lun needs to me un-mapped.
     script_log('Inserting serial: %s, cloned_lun_serial: %s, snap_name: %s, group: %s' %\
@@ -279,9 +276,9 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     sdb.insert_clone_info(serial, cloned_lun_serial, snap_name, accessgroup)
     rdb.insert_snap_info(snap_name, index)
     script_log("Index is:" + str(index))
-    return cloned_lun_serial
+    return cloned_lun_serial        
 
-
+ 
 def delete_cloned_lun(cdb, sdb, server, lun_serial):
     '''
     For the given serial, finds the last cloned lun
@@ -293,12 +290,11 @@ def delete_cloned_lun(cdb, sdb, server, lun_serial):
     sdb : script db
     lun_serial : the lun serial for which we find the last cloned lun
     '''
-    script_log('Starting delete_cloned_lun')
     clone_lun, snap_name, group = sdb.get_clone_info(lun_serial)
     clone_serial = clone_lun.split(':')[-1]
     script_log('Clone serial: %s , snap_name: %s, group: %s' % \
                (str(clone_serial), str(snap_name), str(group)))
-
+	
     if not clone_serial:
         script_log ("No clone lun to be deleted")
         return
@@ -309,8 +305,8 @@ def delete_cloned_lun(cdb, sdb, server, lun_serial):
     if status != 0:
         print ("Failed to delete cloned lun " + str(err))
         return
-
-    script_log("Unmapping successful : " + str(out))
+       
+    script_log("Unmapping successful : " + str(out))   
     sdb.delete_clone_info(lun_serial)
 
 
@@ -328,7 +324,7 @@ def mount_proxy_backup(cdb, sdb, cloned_lun_info, snap_name,
     sdb : script db
     cloned_lun_serial : the lun serial of the cloned snapshot lun
     snap_name : snapshot name
-    access_group : initiator group
+    access_group : initiator group   
     proxy_host : the ESX proxy host/VMware VCenter
     datacenter : VMware datacenter
     include_hosts : Regex to include hosts for proxy backup
@@ -344,10 +340,10 @@ def mount_proxy_backup(cdb, sdb, cloned_lun_info, snap_name,
     cmd = ('%s "%s" --server %s --username %s --password %s --luns %s ' \
            '--datacenter "%s" --include_hosts "%s" --exclude_hosts "%s" ' \
            '--extra_logging 1' %\
-           (PERL_EXE, VADP_SETUP, proxy_host,
+           (PERL_EXE, VADP_SETUP, proxy_host, 
             username, password, cloned_lun_serial,
             datacenter, include_hosts, exclude_hosts))
-
+    
     script_log("Command is: " + cmd)
     proc = subprocess.Popen(cmd,
                             stdin = subprocess.PIPE,
@@ -363,7 +359,7 @@ def mount_proxy_backup(cdb, sdb, cloned_lun_info, snap_name,
     else:
         script_log("Mounted the cloned lun successfully")
 
-
+		
 def unmount_proxy_backup(cdb, sdb, lun_serial, proxy_host,
                          datacenter, include_hosts, exclude_hosts):
     '''
@@ -371,7 +367,7 @@ def unmount_proxy_backup(cdb, sdb, lun_serial, proxy_host,
 
     cdb : credentials db
     sbd : script db
-    lun_serial : the lun serial
+    lun_serial : the lun serial   
     proxy_host : the ESX proxy host
     datacenter : VMware datacenter
     include_hosts : Hosts to include to perform proxy backup
@@ -392,7 +388,7 @@ def unmount_proxy_backup(cdb, sdb, lun_serial, proxy_host,
     if not cloned_lun:
          script_log("No clone serial found, returning")
          return	True
-
+	
     cmd = ('%s "%s" --server %s --username %s --password %s --luns %s ' \
            '--datacenter "%s" --include_hosts "%s" --exclude_hosts "%s" '\
            '--extra_logging 1' %\
@@ -415,7 +411,7 @@ def unmount_proxy_backup(cdb, sdb, lun_serial, proxy_host,
         return False
     else:
         script_log("Un-mounted the clone lun successfully")
-
+	
     return True
 
 def get_option_parser():
@@ -491,8 +487,6 @@ def get_option_parser():
 
 
 if __name__ == '__main__':
-    set_logger()
-    script_log("Running script with args: %s" % str(sys.argv))
     options, argsleft = get_option_parser().parse_args()
 
     # Set the working dir prefix
@@ -500,7 +494,7 @@ if __name__ == '__main__':
 
     # Credentials db must be initialized using the cred_mgmt.py file
     cdb = script_db.CredDB(options.work_dir + r'\cred_db')
-
+	
     # Initialize the script database
     sdb = script_db.ScriptDB(options.work_dir + r'\script_db')
     sdb.setup()
@@ -508,23 +502,18 @@ if __name__ == '__main__':
     # Create snap to replay mapping database
     rdb = script_db.SnapToReplayDB(options.work_dir + r'\replay_db')
     rdb.setup()
-
+    
     # Setup server/lun info
     conn = options.array
     serial = options.serial
-
-    # Convert the serial seen on the Granite Core
-    # to the serial that Compellent understands.
-    # Example:
-    # Serial on Granite Core: 6000d310005267000000000000000017
-    # Serial Compellent understands: 00005267-00000017
-    # The first 8 digits are vendor id so we can ignore them.
-    compellent_serial = '00' + serial[8:14] + '-' + serial[-8:]
-
+	
+    # For iscsi, serial seen on GC is same as required by snap commands
+    compellent_serial = serial
+    
     if options.operation == 'HELLO':
         check_lun(conn, compellent_serial)
-    elif options.operation == 'CREATE_SNAP':
-        create_snap(cdb, sdb, rdb, conn, compellent_serial, options.snap_name,
+    elif options.operation == 'CREATE_SNAP':   
+        create_snap(cdb, sdb, rdb, conn, compellent_serial, options.snap_name, 
                     options.access_group, options.proxy_host,
                     options.datacenter, options.include_hosts,
                     options.exclude_hosts,

@@ -7,3 +7,4 @@
 https://www.jeffknupp.com/blog/2013/08/16/open-sourcing-a-python-project-the-right-way/
 http://www.connorgarvey.com/blog/?p=184
 - Follow VMware python SDK structure: https://github.com/vmware/pyvmomi
+- Setup configuration script to validate the environemt, python, perl, sdk and etc.
