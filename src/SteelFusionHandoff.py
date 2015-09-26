@@ -325,7 +325,7 @@ def delete_lun(cdb, sdb, server, serial):
         return
 
     script_log("LUN unmap operation succeeded")
-    sdb.delete_snap_info(serial)
+    sdb.delete_clone_info(serial)
     script_log("LUN %s deleted successfully" % lun_name)
     return
 
