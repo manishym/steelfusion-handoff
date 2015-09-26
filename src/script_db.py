@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# (C) Copyright 2014 Riverbed Technology, Inc
+# (C) Copyright 2015 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 #
 ###############################################################################
+
 import sqlite3
 
 class CredDB(object):
@@ -162,10 +163,9 @@ class SnapToReplayDB(object):
         self.conn_.commit()
         return data or ('', '')
 
-    def delete_clone_info(self, snap_name):
+    def delete_snap_info(self, snap_name):
         c = self.conn_.cursor()
-        lun = (snap_name,)
-        c.execute("DELETE FROM snap_to_replay_info where snap_name=?", snap_name)
+        c.execute("DELETE FROM snap_to_replay_info where snap_name=?", (snap_name,))
         self.conn_.commit()
 
     def close(self):

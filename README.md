@@ -1,6 +1,6 @@
 
 --------------------------------------------------
-# Snapshot Handoff Sample Scripts
+# Snapshot Handoff Script
 --------------------------------------------------
 
 This document describes how to setup handoff host with sample scripts.
@@ -10,10 +10,22 @@ Riverbed Technology and must not be distributed without proper licenses.
 All rights reserved.
 
 ---------------------------------------------------
+# Hardware Tested
+---------------------------------------------------
+The script has been tested on:
+
+SteelFusion Core 3.6.0
+SteelFusion EX1160 v3.6.0a
+ESXi 5.5.0
+HP EVA 8400 (P6000), HSV340 Controller (10001000 Firmware)
+HP P6000 SSSU 10.3.6
+Windows 2012 Handoff host
+
+---------------------------------------------------
 # Preparing the Handoff Host
 ---------------------------------------------------
-The scripts have been tested on Windows 2K8 R2, Windows 2016
-1. Install Python3.3/3.5.0 (https://www.python.org/downloads/) under C:\Python33 for "all" users.
+The scripts have been tested on Windows 2K8 R2, Windows 2012
+1. Install Python3.4.0+ (https://www.python.org/downloads/) under C:\Python34 for "all" users.
 2. Install VMware's Perl SDK. The minimum required version is "VMware vSphere SDK for Perl 5.5".
    By default, the SDK is installed at 'C:\Program Files (x86)\Vmware'.
    Please make sure to include the SDK Path 'C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\bin' and

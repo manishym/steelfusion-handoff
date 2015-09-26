@@ -22,16 +22,18 @@
 #
 ###############################################################################
 
-# Script DB is used to store/load the cloned lun
-# information and the credentials
-import script_db
-import sys
+# Basic setup script
 
-DB_NAME = 'cred_db'
+import src.script_db
+import sys
+import os
+
+DB_NAME = r'\var\cred.db'
 
 if __name__ == '__main__':
     # Create DB
-    db = script_db.CredDB('cred_db')
+    print(os.getcwd() + DB_NAME)
+    db = src.script_db.CredDB(os.getcwd() + DB_NAME)
 
     done = False
     while not done:
