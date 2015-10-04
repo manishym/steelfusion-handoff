@@ -14,6 +14,8 @@ use POSIX;
 require "vm_common.pl";
 
 use File::Temp qw/ tempfile tempdir /;
+# VMX temp file location
+use constant VMX_TMP => "C:\rvbd_handoff_scripts\var";
 
 sub fix_vm {
     my ($ds, $vm, $datacenter, $no_overwrite, $skip_vm_registration) = @_;
@@ -41,7 +43,7 @@ sub fix_vm {
     #Fetch the vmx file from the esxi
     my ($vm_dir, $vmx_filename) = get_vmx_file_info($vm);
     my $remote_vmx_path = "$vm_dir/$vmx_filename";
-    my $tmpfile_dir = "c:\temp";
+    my $tmpfile_dir = VMX_TMP;
     my $tmpfile_template = "$vmx_filename". "XXXXX";
     my ($discard, $vmx_file) = tempfile($tmpfile_template,
                                         DIR => $tmpfile_dir,

@@ -409,7 +409,7 @@ def unmount_proxy_backup(cdb, sdb, lun_serial, proxy_host,
            '--extra_logging 1 --skip_vm_registration %s' %\
            (PERL_EXE, WORK_DIR + VADP_CLEANUP,
            proxy_host, username, password, cloned_lun,
-           datacenter, include_hosts, exclude_hosts,SKIP_VM_REGISTRATION))
+           datacenter, include_hosts, exclude_hosts, SKIP_VM_REGISTRATION))
 
     script_log("Command is: " + cmd)
     proc = subprocess.Popen(cmd,
