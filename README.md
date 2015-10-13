@@ -1,4 +1,3 @@
-
 --------------------------------------------------
 # Snapshot Handoff Script
 --------------------------------------------------
@@ -9,12 +8,17 @@ Riverbed Technology and must not be distributed without proper licenses.
 All rights reserved.
 
 ---------------------------------------------------
+# Version
+---------------------------------------------------
+v1.0.1-10062015
+
+---------------------------------------------------
 # Hardware Tested
 ---------------------------------------------------
 SteelFusion Core 3.6.0
 SteelFusion EX1160 v3.6.0a
 ESXi 5.5.0
-HP EVA 8400 (P6000), HSV340 Controller (10001000 Firmware)
+HP EVA 8400, HSV340 Controller (10001000 Firmware)
 HP P6000 SSSU 10.3.6
 Windows 2012 Handoff host
 
@@ -60,14 +64,7 @@ Granite Core dev team has provided the following package can help ease the
 deployment of Snapshot Handoff. Please note that all of these scripts
 MUST be installed in the WORK_DIR.
 
-1. ./src/script_db.py
-This is a python module that defines two classes for managing information
-on the Handoff host and act like a database. Note that this database is stored
-in binary format, and it is NOT encrypted. Any information stored in this
-database created by this module can be easily extracted by anyone who has
-access to the database file.
-
-2. setup.py
+1. setup.py
 This is a python script that allows the customers to store credentials
 for the storage array in a local database (created using the script_db module
 mentioned above). The script allows user to:
@@ -76,26 +73,35 @@ b. Add/Modify Host Information : You can add or modify the credentials associate
 c. Delete Host Information : This helps delete information associated with a host.
 d. Show information stored in the database for all hosts.
 
-Before using the sample scripts provided, users MUST setup the credentials database
-by running this script in the WORK_DIR.
+NOTE: Before using proxy handoff scripts, users MUST setup the credentials database
+by running this script in the WORK_DIR. User must add storage appliance and ESXi proxy host
+IP/hostname and  associated credentials
 
-4. SteelFusionHandoff.py
+2. SteelFusionHandoff.py
 This is a full-working script that also supports
 proxy backup operation for VMware luns.
 The script arguments are:
 work-dir : WORK_DIR for handoff
 storage-array : storage array
-system: storage array system
+system: storage array system, specific to EVA managed array
 proxy-host : ESX Proxy Server
 access-group : SAN Initiator group to which proxy host is mapped
 protect-category : Snapshot category for which proxy backup must be run.
 
-5. Proxy Backup Scripts.
-The following are the perl scripts implement proxy backup.
+3. Proxy Backup Scripts.
+The following are the perl scripts implement LUN mounting.
 Logger.pm LogHandler.pm
 vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
 
-6. Log file is located in .\log\ folder.
+4. Script logging.
+Script log file is located in WORK_DIR\log\ folder.
+Script also tracks activity under Microsoft's System Event Log.
+
+5. Work files.
+All work files are located in WORK_DIR\log\ folder.
+Work files get created by executing scripts. These work files store
+credentials, track snapshot names, track mounted LUNs
+and store resignatured virtual machine vmx files.
 
 ------------------------------------------------------
 # Example Installation Steps
@@ -123,7 +129,6 @@ vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
    Then enter host information. Note that to later change any information, re-run the same
    command (do the Setup the DB - this will erase all other information in the db).
    Add information for the proxy host (ex. PROXY_ESX) and the storage array (ex. STORAGE_ARRAY).
-
 7. Reboot the Windows VM. This is just to ensure that the changes
    you made stick and are picked up properly by Windows OS.
 8. On Granite Core, create a Handoff Configuration (under Snapshot -> Handoff Hosts).
@@ -135,7 +140,7 @@ vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
    Note that STORAGE_ARRAY and PROXY_HOST are IP addresses/DNS names for storage array and proxy ESX server.
    They must match (6) so that the script will pick up the information for these from the credentials database.
    Ex.
-   '--work-dir c:\rvbd_handoff_scripts --storage-array my-eva-manager --system EVA-PROD --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'
+   '--work-dir c:\rvbd_handoff_scripts --storage-array 192.168.1.216 --system EVA-PROD --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'
 
    Note: access-group is the permission on the lun, just make sure the wwn has permission to access the newly created volume
    Press 'Add Handoff Host'.

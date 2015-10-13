@@ -15,7 +15,7 @@ require "vm_common.pl";
 
 use File::Temp qw/ tempfile tempdir /;
 # VMX temp file location
-use constant VMX_TMP => "C:\rvbd_handoff_scripts\var";
+use constant VMX_TMP => 'C:\\rvbd_handoff_scripts\\var';
 
 sub fix_vm {
     my ($ds, $vm, $datacenter, $no_overwrite, $skip_vm_registration) = @_;
@@ -62,10 +62,8 @@ sub fix_vm {
     # Start parsing the vmx file and substitute the disks
     open (in_fh, "<$vmx_file") or die "cannot open $vmx_file";
     open (out_fh, "+>$fixed_vmx_file") or die "cannot open $fixed_vmx_file";
-
-    print out_fh "#Updated by Riverbed Granite at: ". strftime "%F %T", localtime $^T;
+    print out_fh "#Updated by Riverbed Granite at: ". strftime '%Y-%m-%d %H:%M:%S', localtime $^T;
     print out_fh "\n";
-    my $fm = Vim::get_view(mo_ref => Vim::get_service_content()->fileManager);
     while (<in_fh>) {
         chomp;
         my $line = $_;
