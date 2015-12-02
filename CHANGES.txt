@@ -1,0 +1,10 @@
+1.1.0 - 2015/12/01
+ * Support for Multiple Appliances with --array-modely key
+ * Support for HP EVA multiple array snapshot
+ * Updated VADP to SteelFusion Core version 4.2.0
+
+1.0.1
+ * Fix VADP VM re-configuration error due to incorrect temp path
+
+1.0.0 - 2015/10/16
+ * Initial release.

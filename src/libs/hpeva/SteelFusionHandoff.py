@@ -37,8 +37,8 @@ import os
 
 # Script DB is used to store/load the cloned lun
 # information and the credentials
-sys.path.append("%s/src" % os.getcwd())
-import script_db
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../../..'))
+from src import script_db
 
 # Configuration defaults
 CRED_DB = r'\var\cred.db'

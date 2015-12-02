@@ -48,6 +48,10 @@ def get_option_parser():
                            "Currently supported models:\n"
                            "\thpeva - HP EVA 8400"
                            "\tcompellent - Dell Compellent 2000/2040")
+    parser.add_argument("--array",
+                      required=True,
+                      default="localhost",
+                      help="storage array manager ip address or dns name")
     return parser
 
 def main():
@@ -70,7 +74,7 @@ def main():
             nbin = sys.argv[arg_ind+1]
             sys.argv.remove(nbin)
         sys.argv.remove("--array-model")
-        path_list = [api_path] + sys.argv[1:]
+        path_list =[sys.executable] + [api_path] + sys.argv[1:]
         retcode = subprocess.call(path_list, shell=False)
         sys.exit(retcode)
     except OSError as e:

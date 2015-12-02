@@ -136,11 +136,11 @@ and store resignatured virtual machine vmx files.
    Use the following for script path:
    'C:\Python34\python.exe C:\rvbd_handoff_scripts\src\run.py '
    Use the following for script args:
-   '--work-dir c:\rvbd_handoff_scripts --arraymodel SAN_MODEL --storage-array STORAGE_ARRAY --system EVA_STORAGE_SYSTEM --proxy-host PROXY_HOST --access-group proxy_esxi --protect-category daily'
+   '--array-name ARRAYMODEL --work-dir c:\rvbd_handoff_scripts --arraymodel SAN_MODEL --storage-array STORAGE_ARRAY --system EVA_STORAGE_SYSTEM --proxy-host PROXY_HOST --access-group proxy_esxi --protect-category daily'
    Note that STORAGE_ARRAY and PROXY_HOST are IP addresses/DNS names for storage array and proxy ESX server.
    They must match (6) so that the script will pick up the information for these from the credentials database.
    Ex.
-   '--work-dir c:\rvbd_handoff_scripts --storage-array 192.168.1.216 --system EVA-PROD --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'
+   '--array-name hpeva --work-dir c:\rvbd_handoff_scripts --storage-array 192.168.1.216 --system EVA-PROD --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'
 
    Note: access-group is the permission on the lun, just make sure the wwn has permission to access the newly created volume
    Press 'Add Handoff Host'.
