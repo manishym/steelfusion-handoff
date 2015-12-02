@@ -266,6 +266,74 @@ sub serial_match_scsi_luns {
     return \%serial_scsi_hash;
 }
 
+sub should_exclude_vm {
+    my ($vm_name, $acs_include_filter, $acs_exclude_filter,
+        $include_filter, $exclude_filter) = @_;
+    # Check if the VM has to be skipped. The order is like this:
+    #  - First apply acs exclude filter
+    #  - then apply acs include filter
+    #  This will give you VMs which were snapshotted at the branch.
+    #  Then apply 
+    #  - exclude filter for proxy_backup
+    #  - include filter for proxy_backup
+    return (apply_filter($vm_name, $acs_exclude_filter) ||
+            !(apply_filter($vm_name, $acs_include_filter)) ||
+            apply_filter($vm_name, $exclude_filter) ||
+            !(apply_filter($vm_name, $include_filter)));
+}
+
+sub handle_no_vmx_datastores {
+    my ($ds, $datacenter, $host, $skip_vm_registration,
+        $acs_include_filter, $acs_exclude_filter,
+        $include_filter, $exclude_filter, $vm_name_prefix) = @_;
+    my $log = LogHandle->new("handle_no_vmx_datastores");
+
+    if ($skip_vm_registration == 0) {
+        # Nothing to do
+        return;
+    }
+
+    # Check if there are any VMs that have disks belonging to
+    # this datastore. If there are, check if they should be
+    # excluded. If not, then check if we are skipping
+    # registration. If we are, then we must delete the
+    # snapshot delta, vmdk and ctk files for the disks
+    # that belong to this datastore and are attached to that VM.
+    if (!defined($ds->vm)) {
+	$log->info("No VMs found on this datastore yet");
+	return;
+    }
+
+    foreach (@{$ds->vm}) {
+        my $vm = Vim::get_view(mo_ref => $_);
+        my $vm_name = $vm->name;
+        if (should_exclude_vm($vm_name, $acs_include_filter,
+                              $acs_exclude_filter,
+                              $include_filter, $exclude_filter)) {
+            $log->info("Skipping VM: $vm_name as specified by regex");
+            next;
+        }
+        $log->diag("Processing VM: $vm_name as specified by regex");
+        
+        # Remove the snapshot files for the VM as it is
+        # required for incremental backups to work
+        eval {
+            fix_vm($vm, $datacenter, 0, $skip_vm_registration);
+        };
+        if ($@) {
+            die "Error while fixing the config file for VM $vm_name: $@";
+        }
+        if ($skip_vm_registration == 1) {
+            eval {
+                $vm->Reload();
+            };
+            if ($@) {
+                $log->error("Error while reloading VM $vm_name: $@");
+            }
+        }
+    }
+}
+
 sub prepare_vms_for_backup {
     my ($ds, $datacenter, $host, $skip_vm_registration,
         $acs_include_filter, $acs_exclude_filter,
@@ -281,6 +349,9 @@ sub prepare_vms_for_backup {
     # as a D drive for the VM.
     if (!defined($vmx_paths) || scalar(@$vmx_paths) == 0) {
         $log->info("No VMs to register for this datastore");
+        handle_no_vmx_datastores($ds, $datacenter, $host, $skip_vm_registration,
+        $acs_include_filter, $acs_exclude_filter,
+        $include_filter, $exclude_filter, $vm_name_prefix);
         return;
     }
 
@@ -321,17 +392,10 @@ sub prepare_vms_for_backup {
             next;
         }
         $vm_name = $vm->name;
-        # Check if the VM has to be skipped. The order is like this:
-        #  - First apply acs exclude filter
-        #  - then apply acs include filter
-        #  This will give you VMs which were snapshotted at the branch.
-        #  Then apply 
-        #  - exclude filter for proxy_backup
-        #  - include filter for proxy_backup
-        if (apply_filter($vm_name, $acs_exclude_filter) ||
-            !(apply_filter($vm_name, $acs_include_filter)) ||
-            apply_filter($vm_name, $exclude_filter) ||
-            !(apply_filter($vm_name, $include_filter))) {
+        # Check if the VM has to be skipped
+        if (should_exclude_vm($vm_name, $acs_include_filter,
+                              $acs_exclude_filter,
+                              $include_filter, $exclude_filter)) {
             $log->info("Skipping VM: $vm_name as specified by regex");
             $skipped = 1;
             #Unregister
@@ -354,7 +418,7 @@ sub prepare_vms_for_backup {
             die "Error while renaming the snapshot for VM $vm_name: $@";
         }
         eval {
-            fix_vm($ds, $vm, $datacenter, 0, $skip_vm_registration);
+            fix_vm($vm, $datacenter, 0, $skip_vm_registration);
         };
         if ($@) {
             die "Error while fixing the snapshot for VM $vm_name: $@";
@@ -536,7 +600,7 @@ sub check_if_vm_in_use {
     foreach (@$refs) {
         my $child_snapshots = $_->childSnapshotList;
         if (defined($child_snapshots) && scalar(@$child_snapshots) > 0) {
-            $log->note("VM $vm_name has other non-granite snapshots");
+            $log->note("VM $vm_name has other non-SteelFusion snapshots");
             return 1;
         }
     }
@@ -545,9 +609,13 @@ sub check_if_vm_in_use {
 
 sub unregister_vms {
     my ($ds, $fail_if_in_use) = @_;
-    my ($vm_views, $total_vms_count) = get_vms_on_datastore($ds);
-    my $ds_name = $ds->name;
     my $log = LogHandle->new("unregister_vms");
+    my ($vm_views, $total_vms_count) = get_vms_on_datastore($ds);
+    if ($total_vms_count == 0) {
+        $log->info("No VMs to unregister");
+        return;
+    } 
+    my $ds_name = $ds->name;
     my $other_ds_vms;
     foreach (@$vm_views) {
         my $vm = $_;
@@ -580,7 +648,7 @@ sub unregister_vms {
 }
 
 sub is_safe_to_unmount {
-    my $ds = shift;
+    my ($ds, $skip_vm_registration) = @_;
     my ($vm_views, $total_vms_count) = get_vms_on_datastore($ds);
     my $ds_name = $ds->name;
     my $log = LogHandle->new("is_safe_to_unmount");
@@ -588,7 +656,17 @@ sub is_safe_to_unmount {
         my $vm = $_;
         my $vm_name = $vm->name;
         #Make a note of the VM it is hosted on some other datastore.
-        my $vmx_file_path = $vm->config->files->vmPathName;
+         my $vmx_file_path = "";
+        eval {
+            $vmx_file_path = $vm->config->files->vmPathName;
+        };
+        if ($@) {
+            if ($skip_vm_registration != 0) {
+                # Since we leave the VM orphaned, we are unable to get
+                # the vmx file. Igore this error and return
+                return;
+            }
+        }
         my ($vmx_ds_name, $vmx_dirname, $vmx_filename) = split_file_path($vmx_file_path);
         if ($vmx_ds_name ne $ds_name) {
             $log->diag("VMX for $vm_name in $vmx_ds_name");
@@ -662,6 +740,9 @@ sub detach_device {
             if(ref($@->detail) eq 'InvalidState') {
                 $log->note("Device is already detached $lun_serial");
                 $detach_err = 0;
+            } elsif(ref($@->detail) eq 'NotFound') {
+                $log->note("Could not find the device : $lun_serial");
+                $detach_err = 0;
             }
         } 
         if ($detach_err) {
@@ -718,7 +799,10 @@ sub umount_and_detach {
         if (ref($@) eq 'SoapFault') {
             if(ref($@->detail) eq 'InvalidState') {
                 $log->note("Device is already unmounted");
-                last;
+            } elsif(ref($@->detail) eq 'NotFoundFault') {
+                $log->note("Could not find datastore, probably it is already unmounted");
+            } else {
+	        die $@;
             }
         } else {
             $log->error("Unable to unmount VMFS datastore $ds_name: " . $@);
@@ -981,7 +1065,7 @@ sub cleanup_datastore {
         }
     } else {
         eval {
-            is_safe_to_unmount($datastore);
+            is_safe_to_unmount($datastore, $skip_vm_registration);
         };
         if ($@) {
             $log->error("Unsafe to unmount the datastore: $@");
@@ -1012,7 +1096,8 @@ sub cleanup_datastore {
     }
 
     if ($unmount_fail or $unregister_failed) {
-        die "Failed to cleanup the datastore";
+        $log->error("Failed to cleanup the datastore");
+        die $@;
     }
 }
 

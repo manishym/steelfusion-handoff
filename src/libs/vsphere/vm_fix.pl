@@ -12,13 +12,14 @@ use lib dirname(abs_path(__FILE__)).'/';
 use POSIX;
 
 require "vm_common.pl";
+require "snapshot_helper.pl";
 
 use File::Temp qw/ tempfile tempdir /;
 # VMX temp file location
 use constant VMX_TMP => 'C:\\rvbd_handoff_scripts\\var';
 
 sub fix_vm {
-    my ($ds, $vm, $datacenter, $no_overwrite, $skip_vm_registration) = @_;
+    my ($vm, $datacenter, $no_overwrite, $skip_vm_registration) = @_;
     my $vm_name = $vm->name;
     my $dc_name;
     if (defined($datacenter)) {
@@ -26,12 +27,19 @@ sub fix_vm {
     }
     my $log = LogHandle->new("fix_vm");
 
-    my $ds_name = $ds->name;
-    my $disk_ids = get_current_disks($ds, $vm);
-    for (keys %$disk_ids) {
-        $log->debug("disk_ids: $_ : " . $disk_ids->{$_});
+    my $disk_snaps;
+    eval {
+    	$disk_snaps = get_latest_disk_snaps($vm);
+    };
+    if ($@) {
+        if ($skip_vm_registration) {
+            $log->info("VM information not yet available, skipping the VM");
+            return;
+        }
+        # For regular VADP we must always have the snapshot
+        # information available.
+        die $@;
     }
-    my $disk_snaps = get_latest_disk_snaps($ds, $vm);
     if (! defined($disk_snaps)) {
         $log->debug("No snapshots for VM: $vm_name, nothing more to be done");
         return;
@@ -40,8 +48,13 @@ sub fix_vm {
         $log->debug("disk_snaps: $_ : " . $disk_snaps->{$_});
     }
 
+    my $disk_ids = get_current_disks($vm);
+    for (keys %$disk_ids) {
+        $log->debug("disk_ids: $_ : " . $disk_ids->{$_}[0]);
+    }
+
     #Fetch the vmx file from the esxi
-    my ($vm_dir, $vmx_filename) = get_vmx_file_info($vm);
+    my ($ds_name, $vm_dir, $vmx_filename) = get_vmx_file_info($vm);
     my $remote_vmx_path = "$vm_dir/$vmx_filename";
     my $tmpfile_dir = VMX_TMP;
     my $tmpfile_template = "$vmx_filename". "XXXXX";
@@ -52,7 +65,7 @@ sub fix_vm {
 
     #Obtain the vmx file from the esxi
     eval {
-        get_file($ds->name, $remote_vmx_path, $vmx_file, $dc_name);
+        get_file($ds_name, $remote_vmx_path, $vmx_file, $dc_name);
     };
     if ($@) {
         $log->error("Unable to obtain the vmx file $vmx_file: $@");
@@ -64,6 +77,8 @@ sub fix_vm {
     open (out_fh, "+>$fixed_vmx_file") or die "cannot open $fixed_vmx_file";
     print out_fh "#Updated by Riverbed Granite at: ". strftime '%Y-%m-%d %H:%M:%S', localtime $^T;
     print out_fh "\n";
+
+    my $do_not_delete_snap = 0;
     while (<in_fh>) {
         chomp;
         my $line = $_;
@@ -75,8 +90,9 @@ sub fix_vm {
             if ($fpath_idx != -1) {
                 #XXX Fix to use REGEX
                 $fpath_idx += length($locate_str);
-                my $file_path = substr($line, $fpath_idx, length($line) - ($fpath_idx + 1));
-                my $dir_path = "";
+                my $file_path = substr($line, $fpath_idx,
+                                       length($line) - ($fpath_idx + 1));
+		my $dir_path = "";
                 my $fname = $file_path;
                 my $fname_idx = rindex($file_path, "/");
                 if ($fname_idx != -1) {
@@ -85,22 +101,30 @@ sub fix_vm {
                 }
                 my $fixed_fname = $dir_path . $fname;
                 # Check if the disk is present in the disk id list, 
-                if ($disk_ids->{$fname}) {
-                    my $disk_id = $disk_ids->{$fname};
+                if (defined $disk_ids->{$fname}) {
+                    my $disk_id = $disk_ids->{$fname}[0];
+                    my $disk_ds_name = $disk_ids->{$fname}[1];
+                    my $disk_dir_name = $disk_ids->{$fname}[2];
                     # Determine the new name
                     if ($disk_snaps->{$disk_id}) {
-                        my $vmdk_to_remove = "[" . $ds->name . "] " . $vm_dir . "/" .  $fixed_fname;
-                        (my $delta_to_remove = $vmdk_to_remove) =~ s/.vmdk/-delta.vmdk/ ;
-                        (my $ctk_to_remove = $vmdk_to_remove) =~ s/.vmdk/-ctk.vmdk/ ;
+                	$log->debug("Fixed filename : " . $fname);
                         $fixed_fname = $dir_path . $disk_snaps->{$disk_id};
                         #Update the line to include the snapshot disk name
                         my $updated_line = substr($line, 0, $fpath_idx) .
                                                     $fixed_fname . "\"";
                         $log->diag("Updating disk name:$line -> $updated_line");
                         $line = $updated_line;
+                        # Delete the delta and all the related files
+    		        if ($skip_vm_registration &&
+                           ($fname ne $disk_snaps->{$disk_id})) {
+                                remove_snapshot_files($disk_ds_name,
+                                                      $disk_dir_name, $fname,
+                                                      $datacenter);
+                        }
                     }
                 } else {
                     $log->debug("Disk $fname is not present in the list");
+                    $do_not_delete_snap = 1;
                 }
             }
         }
@@ -117,8 +141,8 @@ sub fix_vm {
     $log->diag("Pushing the file $dest_file");
     #Send both the original and the fixed vmx files
     eval {
-        put_file($ds->name, $vmx_file, $remote_vmx_path . ".orig", $dc_name);
-        put_file($ds->name, $fixed_vmx_file, $dest_file, $dc_name);
+        put_file($ds_name, $vmx_file, $remote_vmx_path . ".orig", $dc_name);
+        put_file($ds_name, $fixed_vmx_file, $dest_file, $dc_name);
     };
     if ($@) {
         $log->error("Unable to upload modified vmx file: $@");
@@ -128,10 +152,37 @@ sub fix_vm {
     unlink($fixed_vmx_file);
     unlink($vmx_file);
 
+    # remove the snapshot
+    if ($skip_vm_registration && ($do_not_delete_snap == 0)) {
+    	cleanup_vm_snapshot($vm, "granite_snapshot", 1);
+    }
+}
+
+sub remove_snapshot_files {
+    my ($disk_ds_name, $disk_dir_name, $fname, $datacenter) = @_;
+    my $log = LogHandle->new("remove_snapshot_files");
+    my $path_prefix = "[" . $disk_ds_name . "] " . $disk_dir_name . "/";
+    my $vmdk_to_remove = $path_prefix .  $fname;
+    (my $delta_to_remove = $vmdk_to_remove) =~ s/.vmdk/-delta.vmdk/ ;
+    (my $ctk_to_remove = $vmdk_to_remove) =~ s/.vmdk/-ctk.vmdk/ ;
+    # Delete the delta and all the related files
+    $log->info("Removing files: $vmdk_to_remove $ctk_to_remove and $delta_to_remove ");
+    my $fm = Vim::get_view(mo_ref => Vim::get_service_content()->fileManager);
+    eval {
+        $fm->DeleteDatastoreFile(name => $vmdk_to_remove,
+                                 datacenter => $datacenter);
+        $fm->DeleteDatastoreFile(name => $ctk_to_remove,
+                                 datacenter => $datacenter);
+        $fm->DeleteDatastoreFile(name => $delta_to_remove,
+                                 datacenter => $datacenter);
+    };
+    if($@) {
+        die "Failed to delete file: ".($@->fault_string);
+    }
 }
 
 sub get_current_disks {
-    my ($ds, $vm) = @_;
+    my $vm = shift;
     my $files = $vm->layoutEx->file;
     my $log = LogHandle->new("current_disks");
     my %disk_id_hash = ();
@@ -148,9 +199,10 @@ sub get_current_disks {
             my $filepath = $files->[$vmdk_desc_id]->name;
             $log->debug("VMDK descriptor for $id: $filepath");
             my ($ds_name, $dirname, $filename) = split_file_path($filepath);
-            $log->debug("DS: $ds_name, Directory: $dirname, " .
-                        "Filename: $filename");
-            $disk_id_hash{$filename} = $id;
+            $log->diag("DS: $ds_name, Directory: $dirname, " .
+                       "Filename: $filename");
+            my @disk_info = ($id, $ds_name, $dirname, $filename);
+            $disk_id_hash{$filename} = \@disk_info;
         };
         if ($@) {
             $log->note("Failed to find information for disk with $id : $@");
@@ -176,7 +228,7 @@ sub get_current_disks {
 #Returns a hash map of disk id to disk descriptor name of the latest snapshot
 #that was taken.
 sub get_latest_disk_snaps {
-    my ($ds, $vm) = @_;
+    my $vm = shift;
     my $files = $vm->layoutEx->file;
     my $log = LogHandle->new("latest_snap");
     my %disk_snapshot_hash = ();
@@ -233,7 +285,7 @@ sub get_vmx_file_info {
         my $name = $_->name;
         if (index($name, ".vmx") != -1) {
             my ($ds_name, $dir, $fname) = split_file_path($name);
-            return ($dir, $fname);
+            return ($ds_name, $dir, $fname);
         }
     }
     die "Unable to locate the vmx file";

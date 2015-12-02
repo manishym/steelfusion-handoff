@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# (C) Copyright 2014 Riverbed Technology, Inc
+# (C) Copyright 2015 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -102,13 +102,13 @@ sub logit {
     my ($log_level_str, $pfx, $msg) = @_;
     my $log_level = $self->{log_level_str_}->{$log_level_str};
     my $log_msg = "[$pfx.$log_level_str] - $msg";
-	
+
 	my %event = ( 'EventID' , 100,
 	              'EventType', $log_level,
 				  'Category', "",
 				  'Strings',  $log_msg,
 				  'Data', $log_msg);
-	
+
     #syslog($log_level, $log_msg);
 	if (defined $Logger::_handle) {
 		$Logger::_handle->Report(\%event);
