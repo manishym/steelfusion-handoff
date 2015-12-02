@@ -25,55 +25,57 @@ __author__ = 'Laurynas Kavaliauskas'
 ###############################################################################
 
 ###############################################################################
-# Main process, kicks off appropriate storage script
+# Main API wrapper, kicks off appropriate storage array scripts
+# Takes parameter --array-model
+# Currently supported models:
+# hpeva - HP EVA 8400
+# compellent - Dell Compellent 2000/2040
 ###############################################################################
 import sys
-import optparse
+import argparse
 import os
 import subprocess
-
-WORK_DIR =  r'C:\rvbd_handoff_scripts'
 
 def get_option_parser():
     '''
     Returns argument parser
     '''
-    parser = optparse.OptionParser()
-    # These are script specific parameters that can be passed as
-    # script arguments from the Granite Core.
-    parser.add_option("--array-model",
-                      type="string",
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--array-model",
+                      required=True,
                       default=None,
                       help="storage array manager model identifier\n"
                            "Currently supported models:\n"
                            "\thpeva - HP EVA 8400"
                            "\tcompellent - Dell Compellent 2000/2040")
-    parser.add_option("--work-dir",
-                      type="string",
-                      default=WORK_DIR,
-                      help="Directory path to the VADP scripts")
     return parser
 
 def main():
-    options, argsleft = get_option_parser().parse_args()
-    api_path = "%s/src/libs/%s/SteelFusionHandoff.py" % (options.work_dir, options.array_model)
-    print (api_path)
+    #TODO:
+    # 1. Run setup.py to check whether all required components are in place
+    # 2. In the future we should be calling main() for apropriate api library instead of suing subprocess.call()
+
+    args, argsleft = get_option_parser().parse_known_args()
+    api_path = "%s/src/libs/%s/SteelFusionHandoff.py" % (os.path.abspath(os.path.dirname(sys.argv[0])), args.array_model)
     if not(os.path.isfile(api_path)):
-        if options.array_model is not None:
-            print("Array '%s' is unknown" % options.array_model, file=sys.stderr)
+        if args.array_model is not None:
+            print("Array type '%s' is unknown." % args.array_model, file=sys.stderr)
         else:
             print("--array-model parameter is missing.", file=sys.stderr)
-        exit (2)
+        exit (1)
     try:
-        #TODO:
-        #0 Check whether script is configured
-        retcode = subprocess.call("%s %s" % (api_path, str(sys.argv)), shell=True)
-        if retcode < 0:
-            print("Child was terminated by signal %i" % -retcode, file=sys.stderr)
-        else:
-            print("Child returned %i" % retcode, file=sys.stderr)
+        # Cleaning up arguments used only by this module
+        if args.array_model is not None:
+            arg_ind = sys.argv.index("--array-model")
+            nbin = sys.argv[arg_ind+1]
+            sys.argv.remove(nbin)
+        sys.argv.remove("--array-model")
+        path_list = [api_path] + sys.argv[1:]
+        retcode = subprocess.call(path_list, shell=False)
+        sys.exit(retcode)
     except OSError as e:
         print("Execution failed %s" % e, file=sys.stderr)
+        exit (1)
 
 if __name__ == '__main__':
     main()

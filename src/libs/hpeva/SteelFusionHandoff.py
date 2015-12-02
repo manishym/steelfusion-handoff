@@ -1,3 +1,4 @@
+#!/usr/bin/python
 ###############################################################################
 #
 # (C) Copyright 2015 Riverbed Technology, Inc
@@ -31,11 +32,13 @@ import sys
 import errno
 import subprocess
 import logging
-from src.libs.hpeva import hpeva_api
+import hpeva_api
+import os
 
 # Script DB is used to store/load the cloned lun
 # information and the credentials
-import src.script_db
+sys.path.append("%s/src" % os.getcwd())
+import script_db
 
 # Configuration defaults
 CRED_DB = r'\var\cred.db'
@@ -555,9 +558,7 @@ def get_vdisk_name(server, system, wwnid):
         vdisk_name = i['familyname']
     return vdisk_name
 
-
-if __name__ == '__main__':
-
+def main():
     set_logger()
     script_log("Running script with args: %s" % str(sys.argv))
     options, argsleft = get_option_parser().parse_args()
@@ -567,14 +568,14 @@ if __name__ == '__main__':
 
     # Credentials db must be initialized by running the setup.py file in the root
     global cdb
-    cdb = src.script_db.CredDB(options.work_dir + CRED_DB)
+    cdb = script_db.CredDB(options.work_dir + CRED_DB)
 
     # Initialize the script database
-    sdb = src.script_db.ScriptDB(options.work_dir + SCRIPT_DB)
+    sdb = script_db.ScriptDB(options.work_dir + SCRIPT_DB)
     sdb.setup()
 
     # Create snap to replay mapping database
-    rdb = src.script_db.SnapToReplayDB(options.work_dir + SNAP_DB)
+    rdb = script_db.SnapToReplayDB(options.work_dir + SNAP_DB)
     rdb.setup()
 
     # Setup server/lun info
@@ -603,3 +604,6 @@ if __name__ == '__main__':
     sdb.close()
     cdb.close()
     rdb.close()
+
+if __name__ == '__main__':
+    main()

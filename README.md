@@ -136,7 +136,7 @@ and store resignatured virtual machine vmx files.
    Use the following for script path:
    'C:\Python34\python.exe C:\rvbd_handoff_scripts\src\run.py '
    Use the following for script args:
-   '--work-dir c:\rvbd_handoff_scripts --arraymodel--storage-array STORAGE_ARRAY --system EVA_STORAGE_SYSTEM --proxy-host PROXY_HOST --access-group proxy_esxi --protect-category daily'
+   '--work-dir c:\rvbd_handoff_scripts --arraymodel SAN_MODEL --storage-array STORAGE_ARRAY --system EVA_STORAGE_SYSTEM --proxy-host PROXY_HOST --access-group proxy_esxi --protect-category daily'
    Note that STORAGE_ARRAY and PROXY_HOST are IP addresses/DNS names for storage array and proxy ESX server.
    They must match (6) so that the script will pick up the information for these from the credentials database.
    Ex.
