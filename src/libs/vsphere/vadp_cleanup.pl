@@ -139,10 +139,10 @@ if (scalar(keys %$lun_ds_hash) == 0) {
     # go ahead and detach the luns
     for (keys %$serial_wwn_hash) {
         my $host = $serial_wwn_hash->{$_}[1];
-        my $hostView = Vim::get_view(mo_ref => $host->key,
+        my $hostView = Vim::get_view(mo_ref => $host->summary->host,
                         properties => ['name','configManager.storageSystem']);
         my $storageSys = Vim::get_view(mo_ref => $hostView->{'configManager.storageSystem'});
-        lookup_and_detach_device($serial_wwn_hash->{$_}[1],
+        lookup_and_detach_device($serial_wwn_hash->{$_}[0],
                                  $storageSys);
     }
     SUCCESS();

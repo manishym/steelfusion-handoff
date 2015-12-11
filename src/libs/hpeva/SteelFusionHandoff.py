@@ -32,13 +32,14 @@ import sys
 import errno
 import subprocess
 import logging
-import hpeva_api
+
 import os
 
 # Script DB is used to store/load the cloned lun
 # information and the credentials
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../../..'))
 from src import script_db
+from src.libs.hpeva import hpeva_api
 
 # Configuration defaults
 CRED_DB = r'\var\cred.db'
@@ -82,7 +83,7 @@ def set_script_path(prefix):
     WORK_DIR = prefix
     set_logger()
 
-def create_snap(cdb, sdb, rdb, server, serial, system, snap_name,
+def create_snap(cdb, sdb, rdb, server, system, serial, snap_name,
                 access_group, proxy_host, datacenter,
                 include_hosts, exclude_hosts,
                 category, protect_category):
@@ -127,9 +128,9 @@ def create_snap(cdb, sdb, rdb, server, serial, system, snap_name,
         # Un-mount the previously mounted cloned lun from proxy host
         if unmount_proxy_backup(cdb, sdb, serial, proxy_host, datacenter, include_hosts, exclude_hosts) :
             # Delete the cloned snapshot
-            delete_lun(cdb, sdb, server, serial)
+            delete_lun(cdb, sdb, rdb, server, system, serial)
             # Create a cloned snapshot lun form the snapshot
-            lun_serial = create_lun(cdb, sdb, rdb, server, serial, snap_name, access_group)
+            lun_serial = create_lun(cdb, sdb, rdb, server, system, serial, snap_name, access_group)
             # Mount the snapshot on the proxy host
             mount_proxy_backup(cdb, sdb, lun_serial, snap_name,
                                access_group, proxy_host, datacenter,
@@ -146,7 +147,8 @@ def create_snap(cdb, sdb, rdb, server, serial, system, snap_name,
         sys.exit(1)
 
     vdisk_snapname = "rvbd_" + snap_name[0:15]
-    #command = 'ADD SNAPSHOT %s VDISK="%s" ALLOCATION_POLICY=DEMAND WORLD_WIDE_LUN_NAME = %s' %\
+    #command = 'ADD SNAPSHOT %s VDISK="%s" ALLOCATION_POLICY=DEMAND WORLD_WIDE_LUN_NAME = "%s"' %\
+    #    (vdisk_snapname, vdisk_path, wwnid)
     command = 'ADD SNAPSHOT %s VDISK="%s" ALLOCATION_POLICY=DEMAND' %\
                             (vdisk_snapname, vdisk_path)
     user, pwd = cdb.get_enc_info(server)
@@ -159,7 +161,7 @@ def create_snap(cdb, sdb, rdb, server, serial, system, snap_name,
     sys.exit(0)
 
 
-def remove_snap(cdb, sdb, rdb, server, serial, system, snap_name, proxy_host,
+def remove_snap(cdb, sdb, rdb, server, system, serial, snap_name, proxy_host,
                 datacenter, include_hosts, exclude_hosts):
     '''
     Removes a snapshot
@@ -191,7 +193,7 @@ def remove_snap(cdb, sdb, rdb, server, serial, system, snap_name, proxy_host,
                                     datacenter, include_hosts, exclude_hosts):
             sys.exit(1)
         # Delete the snapshot cloned lun
-        delete_lun(cdb, sdb, server, serial)
+        delete_lun(cdb, sdb, rdb, server, system, serial)
 
     # Remove snapshot
     vdisk_snapname = rdb.get_snap_info(snap_name)[1]
@@ -217,7 +219,7 @@ def remove_snap(cdb, sdb, rdb, server, serial, system, snap_name, proxy_host,
     script_log ("Snapshot removed\n")
     sys.exit(0)
 
-def create_lun(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
+def create_lun(cdb, sdb, rdb, server, system, serial,  snap_name, accessgroup):
     '''
     Creates a lun out of a snapshot
 
@@ -242,7 +244,8 @@ def create_lun(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
 
     # Take a snapshot
     vdisk_snapname = "rvbd_" + snap_name[0:15]
-    #command = 'ADD SNAPSHOT %s VDISK="%s" ALLOCATION_POLICY=DEMAND WORLD_WIDE_LUN_NAME = %s' % (vdisk_snapname, vdisk_path, wwnid)
+    #command = 'ADD SNAPSHOT %s VDISK="%s" ALLOCATION_POLICY=DEMAND WORLD_WIDE_LUN_NAME = "%s"' %\
+    #    (vdisk_snapname, vdisk_path, wwnid)
     command = 'ADD SNAPSHOT %s VDISK="%s" ALLOCATION_POLICY=DEMAND' % (vdisk_snapname, vdisk_path)
     user, pwd = cdb.get_enc_info(server)
     out, err, status = hpeva_api.hp_sssu(server, system, user, pwd).run_sssu(command)
@@ -255,9 +258,23 @@ def create_lun(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     hpeva_api.hp_sssu(server, system, user, pwd).run_sssu(command)
     rdb.insert_snap_info(snap_name, vdisk_snapname)
 
+    #Get parent Disk LUN number
+    command = "ls vdisk %s" % vdisk_path
+    objects, err, status = hpeva_api.hp_sssu(server, system, user, pwd).run_sssu(command)
+    if status > 0:
+        print ("Failed to query parent VDISK LUN #" + str(err))
+        sys.exit(1)
+    for i in objects:
+        parent_lunnumber = i['lunnumber']
+        if parent_lunnumber is not None:
+            break
+    if parent_lunnumber is None:
+        print ("Failed to query parent VDISK LUN #" + str(err))
+        sys.exit(1)
+
     # Map LUN to the Host
-    command = 'ADD LUN 0 VDISK=%s HOST=%s' %\
-                            (vdisk_snapname, accessgroup)
+    command = 'ADD LUN %s VDISK=%s HOST=%s' %\
+                            (parent_lunnumber, vdisk_snapname, accessgroup)
     user, pwd = cdb.get_enc_info(server)
     out, err, status = hpeva_api.hp_sssu(server, system, user, pwd).run_sssu(command)
     if status != 0:
@@ -268,12 +285,14 @@ def create_lun(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     command = "ls vdisk %s" % vdisk_snapname
     objects, err, status = hpeva_api.hp_sssu(server, system, user, pwd).run_sssu(command)
     if status > 0:
-        print ("Failed to query snapshot LUN" + str(err))
+        print ("Failed to query snapshot LUN wwn" + str(err))
         sys.exit(1)
     for i in objects:
         #snap_host = i['hostname']
         #snap_lunnumber = i['lunnumber']
         snap_lunid = i['wwlunid']
+        if snap_lunid is not None:
+            break
     lun_serial = snap_lunid.strip().replace('-', '')
 
     # Store this information in a local database.
@@ -286,10 +305,10 @@ def create_lun(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     return lun_serial
 
 
-def delete_lun(cdb, sdb, server, serial):
+def delete_lun(cdb, sdb, rdb, server, system, serial):
     '''
     For the given serial, finds the last cloned lun
-    and delete it.
+    and deletes it.
 
     Note that it does not delete the snapshot, the snapshot is left behind.
 
@@ -397,7 +416,7 @@ def unmount_proxy_backup(cdb, sdb, lun_serial, proxy_host,
 
     # Find the cloned lun from the script db for given lun
     clone_serial, snap_name, group = sdb.get_clone_info(lun_serial)
-    script_log('Clone serial: %s , snap_name: %s, group: %s' % \
+    script_log('Currently mounted LUN serial: %s , snap_name: %s, group: %s' % \
                ( str(clone_serial), str(snap_name), str(group)))
 	# The clone lun info is of the form
 	# index:clone_lun_serial
@@ -584,13 +603,13 @@ def main():
     if options.operation == 'HELLO':
         check_lun(conn, system, options.serial)
     elif options.operation == 'CREATE_SNAP':
-        create_snap(cdb, sdb, rdb, conn, options.serial, options.system, options.snap_name,
+        create_snap(cdb, sdb, rdb, conn, system, options.serial, options.snap_name,
                     options.access_group, options.proxy_host,
                     options.datacenter, options.include_hosts,
                     options.exclude_hosts,
 		            options.category, options.protect_category)
     elif options.operation == 'REMOVE_SNAP':
-        remove_snap(cdb, sdb, rdb, conn, options.serial , options.system,
+        remove_snap(cdb, sdb, rdb, conn, system, options.serial,
                     options.snap_name, options.proxy_host,
                     options.datacenter, options.include_hosts,
                     options.exclude_hosts)
