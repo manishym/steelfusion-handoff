@@ -5,7 +5,7 @@ setup(
     version='1.1.0',
     author='Laurynas Kavaliauskas',
     author_email='lkavaliauskas@riverbed.com',
-    packages=['src', 'src.test'],
+    packages=['', 'src'],
     scripts=['bin/run.py','bin/configure.py'],
     url='http://github.com/Riverbed/steelfusionhandoff/',
     license='LICENSE',

@@ -29,7 +29,7 @@ __author__ = 'Laurynas Kavaliauskas'
 # Takes parameter --array-model
 # Currently supported models:
 # hpeva - HP EVA 8400
-# compellent - Dell Compellent 2000/2040
+# compellent_v1 - Dell Compellent 2000/2040
 ###############################################################################
 import sys
 import argparse
@@ -47,7 +47,7 @@ def get_option_parser():
                       help="storage array manager model identifier\n"
                            "Currently supported models:\n"
                            "\thpeva - HP EVA 8400"
-                           "\tcompellent - Dell Compellent 2000/2040")
+                           "\tcompellent_v1 - Dell Compellent 2000/2040")
     parser.add_argument("--array",
                       required=True,
                       default="localhost",
