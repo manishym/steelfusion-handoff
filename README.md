@@ -64,7 +64,7 @@ Granite Core dev team has provided the following package can help ease the
 deployment of Snapshot Handoff. Please note that all of these scripts
 MUST be installed in the WORK_DIR.
 
-1. setup.py
+1. configure.py
 This is a python script that allows the customers to store credentials
 for the storage array in a local database (created using the script_db module
 mentioned above). The script allows user to:
@@ -77,7 +77,7 @@ NOTE: Before using proxy handoff scripts, users MUST setup the credentials datab
 by running this script in the WORK_DIR. User must add storage appliance and ESXi proxy host
 IP/hostname and  associated credentials
 
-2. SteelFusionHandoff.py
+2. run.py
 This is a full-working script that also supports
 proxy backup operation for VMware luns.
 The script arguments are:
@@ -89,7 +89,7 @@ proxy-host : ESX Proxy Server ip/hotname
 access-group : SAN Initiator group to which proxy host is mapped
 protect-category : Snapshot category for which proxy backup must be run.
 
-3. Proxy Backup Scripts.
+3. Proxy Mounting Scripts.
 The following are the perl scripts implement LUN mounting.
 Logger.pm LogHandler.pm
 vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
@@ -103,6 +103,10 @@ All work files are located in WORK_DIR\log\ folder.
 Work files get created by executing scripts. These work files store
 credentials, track snapshot names, track mounted LUNs
 and store resignatured virtual machine vmx files.
+
+6. SAN libraries and scripts
+All SAN specific scripts are stored in WORK_DIR\lib\<storage type>
+Any SAN library that has _v1 in the folder name, has all working scripts and duplicates in the same folder.
 
 ------------------------------------------------------
 # Example Installation Steps
