@@ -1,7 +1,7 @@
 --------------------------------------------------
 # Snapshot Handoff Script
 --------------------------------------------------
-This document describes how to setup handoff host with sample scripts.
+This document describes how to setup handoff host with SteelFusion handoff scripts.
 This document and all the scripts mentioned here are a property of
 Riverbed Technology and must not be distributed without proper licenses.
 (C) Copyright 2015 Riverbed Technology, Inc
@@ -10,7 +10,7 @@ All rights reserved.
 ---------------------------------------------------
 # Version
 ---------------------------------------------------
-v1.0.3-12122015
+v1.0.4-12142015
 
 ---------------------------------------------------
 # Hardware Tested
@@ -81,10 +81,11 @@ IP/hostname and  associated credentials
 This is a full-working script that also supports
 proxy backup operation for VMware luns.
 The script arguments are:
+array-name : the type of the array we are running scripts against. You can find all names under ./src/libs/ folder
 work-dir : WORK_DIR for handoff
-storage-array : storage array
-system: storage array system, specific to EVA managed array
-proxy-host : ESX Proxy Server
+storage-array : storage array ip/hotname
+system: storage array system, this key is only for EVA managed arrays
+proxy-host : ESX Proxy Server ip/hotname
 access-group : SAN Initiator group to which proxy host is mapped
 protect-category : Snapshot category for which proxy backup must be run.
 

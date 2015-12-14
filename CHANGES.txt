@@ -3,6 +3,14 @@
  * Support for HP EVA multiple array snapshot
  * Updated VADP to SteelFusion Core version 4.2.0
 
+1.0.4
+ * Refactored VADP
+ * Added basic unit test
+ * Consolidated compellent FC and iSCSI script logic
+
+1.0.3
+ * Fixed VADP datastore iteration bug
+
 1.0.1
  * Fix VADP VM re-configuration error due to incorrect temp path
 

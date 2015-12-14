@@ -15,3 +15,5 @@ http://www.connorgarvey.com/blog/?p=184
 - Any nes storage lib should invoke main() in "if __main__ "
 - Update documentation to include --arraymodel parameter
 - Once old code base is converted, use main() function instead of subprocess.call in run.py
+- Update docs to reference all storage appliances
+- Update readme with tested storage appliances.
