@@ -23,7 +23,7 @@ v1.1.0-12162015
 |pure_v1        |Pure Storage           |FA-400/4.014                       |FC     |VMware     |Powershell API v4                          |3.6.0/3.6.0                |NetBackup  |02/15/2015     |There is a REST API, next iteration should be refactored to use REST. PowerShell API: http://blog.purestorage.com/faq-about-the-new-pure-storage-powershell-sdk/ |
 |hp3par_v1      |3PAR                   |7200 / v3.1.3 MU1                  |FC     |VMware     |Mgmt Console CLI 4.6.1 and 3PAR Client v3.3|3.6.0/3.6.0                |n/a        |07/13/2015     |    	No Proxy mount functionality|
 |compellent_v1  |Compellent	            |4020 and 8000/6.5.20               |iSCSI	|VMware	    |Storage Center Command Set 7.01.01.002	    |4.1/4.0	                |VEEAM	    |03/26/2014     |1. SKIP_VM_REGISTRATION=1; 2. admin user hardcoded; 3. compellent_cred.ps1 manages admin credentials for the array|
-|hpeva          |HP                     |EVA 8400, HSV340, 10001000 Firmware|FC	    |VMware	    |HP P6000 SSSU CLI v10.3.4	                |3.6.0/3.6.0	            |VEEAM	    |12/01/2015 	|1. Requires -system argument; 2. SKIP_VM_REGISTRATION=1; 3. Bugfix: LUN mount on ESXi; 4. Bugfix: snapshot cleanup; 5.Doc: http://h20566.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c03375122&lang=en-us&cc=us|
+|hpeva          |HP                     |EVA 8400, HSV340, 10001000 Firmware|FC	    |VMware	    |HP P6000 SSSU CLI v10.3.4	                |3.6.0/3.6.0	            |VEEAM	    |12/01/2015 	|1. Requires -system argument; 2. SKIP_VM_REGISTRATION=1; 3. Bugfix: LUN mount on ESXi; 4. Bugfix: snapshot cleanup; 5.Doc: http://h20566.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c03375122&lang=en-us&cc=us; 6. HP SSSU:https://h20392.www2.hpe.com/portal/swdepot/displayProductInfo.do?productNumber=P6000_CV10.3|
 |hpmsa_v1       |HP                     |MSA	P2000 G3/Bundle v. TS201R015|FC	    |VMware	    |SOAP Web API	                            |3.6.0/3.6.0 and 4.1.0/4.1.0|CA Arcserve|12/16/2015     |1. Upgraded VADP to version 4.2.0|
 
 ---------------------------------------------------
@@ -82,7 +82,7 @@ IP/hostname and  associated credentials
 This is a full-working script that also supports
 proxy backup operation for VMware luns.
 The script arguments are:
-array-name : the type of the array we are running scripts against. Reference supported array table for the correct array name.
+array-model : the type of the array we are running scripts against. Reference supported array table for the correct array name.
 work-dir : WORK_DIR for handoff
 storage-array : storage array ip/hotname
 system: storage array system, this key is only for EVA managed arrays
@@ -114,7 +114,7 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
 ------------------------------------------------------
 1. Setup a VM with Windows 2012 Server.  
 2. Install Python3.4 under C:\Python34.  
-This is the default directory under which this version of python will be installed.
+   This is the default directory under which this version of python will be installed.
 3. Install VMware vSphere SDK for Perl 5.5.  
    To get the Windows Installer, you will need to sign-up with VMware.  
    Install the SDK in its default path (C:\Program Files (x86)\VMware).  
@@ -144,11 +144,11 @@ This is the default directory under which this version of python will be install
    Use the following for script path:  
    'C:\Python34\python.exe C:\rvbd_handoff_scripts\src\run.py '
    Use the following for script args:  
-   '--array-name ARRAYMODEL --work-dir c:\rvbd_handoff_scripts --arraymodel SAN_MODEL --storage-array STORAGE_ARRAY --system EVA_STORAGE_SYSTEM --proxy-host PROXY_HOST --access-group proxy_esxi --protect-category daily'  
+   '--array-model ARRAYMODEL --work-dir c:\rvbd_handoff_scripts --array STORAGE_ARRAY --system EVA_STORAGE_SYSTEM --proxy-host PROXY_HOST --access-group proxy_esxi --protect-category daily'  
    Note that STORAGE_ARRAY and PROXY_HOST are IP addresses/DNS names for storage array and proxy ESX server.  
    They must match (6) so that the script will pick up the information for these from the credentials database.  
    Ex.  
-   '--array-name hpeva --work-dir c:\rvbd_handoff_scripts --storage-array 192.168.1.216 --system EVA-PROD --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'  
+   '--array-model hpeva --work-dir c:\rvbd_handoff_scripts --array 192.168.1.216 --system EVA-PROD --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'  
 
    Note: access-group is the permission on the lun, just make sure the wwn has permission to access the newly created volume  
    Press 'Add Handoff Host'.
