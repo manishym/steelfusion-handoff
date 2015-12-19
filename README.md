@@ -128,7 +128,7 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
    Copy all the files in the Handoff Scripts package to this directory.  
    To ensure consistency, make sure the scripts are marked read-only.
 6. Run the following command from command shell:  
-   ```bash
+   ```
    cd C:\rvbd_handoff_scripts
    C:\Python34\python.exe setup.py
    ```
