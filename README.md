@@ -149,8 +149,7 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
    They must match (6) so that the script will pick up the information for these from the credentials database.  
    Ex.  
    '--array-model hpeva --work-dir c:\rvbd_handoff_scripts --array 192.168.1.216 --system EVA-PROD --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'  
-
    Note: access-group is the permission on the lun, just make sure the wwn has permission to access the newly created volume  
-   Press 'Add Handoff Host'.
+   Press 'Add Handoff Host'.  
 9. Now assign this handoff host to a LUN (LUN -> Snapshots -> Configuration -> Handoff Host).
    Use 'Test Handoff Host' to validate configuration

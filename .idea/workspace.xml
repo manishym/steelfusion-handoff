@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ee27bb01-b501-434d-a095-2a908bfa1618" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SteelFusionHandoff.iws" />
@@ -63,8 +64,8 @@
       <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="3.4387352">
-              <caret line="116" column="86" selection-start-line="116" selection-start-column="86" selection-end-line="116" selection-end-column="86" />
+            <state vertical-scroll-proportion="4.298419">
+              <caret line="145" column="39" selection-start-line="145" selection-start-column="39" selection-end-line="145" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -616,7 +617,19 @@
       <option name="project" value="LOCAL" />
       <updated>1450508227953</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="- Updated README">
+      <created>1450508274208</created>
+      <option name="number" value="00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1450508274208</updated>
+    </task>
+    <task id="LOCAL-00019" summary="- Updated README">
+      <created>1450508330194</created>
+      <option name="number" value="00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1450508330194</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TodoView">
@@ -1114,8 +1127,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="3.4387352">
-          <caret line="116" column="86" selection-start-line="116" selection-start-column="86" selection-end-line="116" selection-end-column="86" />
+        <state vertical-scroll-proportion="4.298419">
+          <caret line="145" column="39" selection-start-line="145" selection-start-column="39" selection-end-line="145" selection-end-column="39" />
           <folding />
         </state>
       </provider>
