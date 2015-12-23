@@ -59,6 +59,9 @@ VADP_CLEANUP = WORK_DIR + r'\vadp_cleanup.pl'
 VADP_SETUP = WORK_DIR + r'\vadp_setup.pl'
 HANDOFF_LOG_FILE = WORK_DIR + r'\handoff.txt'
 
+# Generic paramaters
+REQUEST_TIMEOUT = 600
+
 def set_logger():
     logging.basicConfig(filename= HANDOFF_LOG_FILE, level=logging.DEBUG,
                         format='%(asctime)s : %(levelname)s: %(message)s',
@@ -122,7 +125,7 @@ def check_lun(conn, serial):
     script_log('just getting a handle on the LUN.')
 
     requestvolumes = base_url + "/show/volume-names"
-    volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=10)
+    volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(volumes.text.encode('utf-8'))
     assert_response_ok(obj)
     #script_log(volumes.text.encode('utf-8'))
@@ -209,7 +212,7 @@ def create_snap(cdb, sdb, rdb, server, serial, snap_name,
 
     # Creating a snapshot and no backup
     requestvolumes = base_url + "/show/volume-names"
-    volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=10)
+    volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(volumes.text.encode('utf-8'))
     assert_response_ok(obj)
 
@@ -241,7 +244,7 @@ def create_snap(cdb, sdb, rdb, server, serial, snap_name,
 
     array_volname = "rvbd_" + snap_name[0:15]
     createsnapshot = base_url + "/create/snapshots" + "/" + "volumes/" + volname + "/" + array_volname
-    createsnap = requests.get(createsnapshot, verify=False, headers=headers, timeout=10)
+    createsnap = requests.get(createsnapshot, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(createsnap.text.encode('utf-8')).find("OBJECT")
     assert_response_ok(obj)
 
@@ -296,7 +299,7 @@ def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
     if array_volname :
         script_log("The Array Volume name is " + array_volname + "\n.")
         deletesnapshot = base_url + "/delete/snapshot" + "/" + "cleanup" + "/" + array_volname
-        deletesnap = requests.get(deletesnapshot, verify=False, headers=headers, timeout=10)
+        deletesnap = requests.get(deletesnapshot, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
         script_log (array_volname + " snapshot removed\n")
         rdb.delete_clone_info(snap_name)
         sys.exit(0)
@@ -321,7 +324,7 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     script_log('Starting create_snap_clone')
 
     requestvolumes = base_url + "/show/volume-names"
-    volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=10)
+    volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(volumes.text.encode('utf-8'))
 
     breakloop = False
@@ -357,7 +360,7 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     # need to put in the , snap_name, volumes=volume_name)
 
     createsnapshot = base_url + "/create/snapshots" + "/" + "volumes/" + volname + "/" + array_volname
-    createsnap = requests.get(createsnapshot, verify=False, headers=headers, timeout=10)
+    createsnap = requests.get(createsnapshot, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(createsnap.text.encode('utf-8')).find("OBJECT")
     assert_response_ok(obj)
     script_log('created snapshot ' + array_volname)
@@ -373,7 +376,7 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     # Get next available LUN number.
     luns = []
     getVLUN = base_url + "/show/host-maps"
-    tree = requests.get(getVLUN, verify=False, headers=headers, timeout=10)
+    tree = requests.get(getVLUN, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(tree.text.encode('utf-8'))
 
     for obj in obj.iter():
@@ -392,15 +395,15 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     mapLUN = base_url + "/map/volume/access/read-write/host/" + accessgroup + "/lun/" + str(lun) + "/" + array_volname
     script_log('mapping LUN with url: '+ mapLUN)
     time.sleep(5)
-    assignmapping = requests.get(mapLUN, verify=False, headers=headers, timeout=10)
+    assignmapping = requests.get(mapLUN, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     time.sleep(5)
-    assignmapping = requests.get(mapLUN, verify=False, headers=headers, timeout=10)
+    assignmapping = requests.get(mapLUN, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(assignmapping.text.encode('utf-8')).find("OBJECT")
     assert_response_ok(obj)
     script_log('Assigned mapping on MSA to ' + accessgroup + '.')
     #Getting the LUN serial number from the cloned LUN:
     requestvolumes = base_url + "/show/volume-names"
-    volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=10)
+    volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(volumes.text.encode('utf-8'))
     assert_response_ok(obj)
 
@@ -467,7 +470,7 @@ def unmap_cloned_lun(cdb, sdb, server, lun_serial):
     array_volname = 'rvbd_' + snap_name[0:15]
     unmap = base_url + "/unmap/volume" + "/" + "host" + "/" + group + "/" + array_volname
     try:
-        unmap_lun = requests.get(unmap, verify=False, headers=headers, timeout=10)
+        unmap_lun = requests.get(unmap, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
         obj = etree.XML(deletesnap.text.encode('utf-8')).find("OBJECT")
     except Exception:
         pass
@@ -721,4 +724,3 @@ if __name__ == '__main__':
     sdb.close()
     cdb.close()
     rdb.close()
- 

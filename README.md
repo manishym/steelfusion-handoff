@@ -1,11 +1,11 @@
 --------------------------------------------------
 # Snapshot Handoff Script
 --------------------------------------------------
-This document describes how to setup handoff host with SteelFusion handoff scripts.
-This document and all the scripts mentioned here are a property of
-Riverbed Technology and must not be distributed without proper licenses.
-(C) Copyright 2015 Riverbed Technology, Inc
-All rights reserved.
+This document describes how to setup handoff host with SteelFusion handoff scripts.  
+This document and all the scripts mentioned here are a property of  
+Riverbed Technology and must not be distributed without proper licenses.  
+(C) Copyright 2015 Riverbed Technology, Inc  
+All rights reserved.  
 
 ---------------------------------------------------
 # Script Version
@@ -73,7 +73,6 @@ mentioned above). The script allows user to:
 	2. Add/Modify Host Information : You can add or modify the credentials associated with a host.
 	3. Delete Host Information : This helps delete information associated with a host.
 	4. Show information stored in the database for all hosts.  
-
 NOTE: Before using proxy handoff scripts, users MUST setup the credentials database
 by running this script in the WORK_DIR. User must add storage appliance and ESXi proxy host
 IP/hostname and  associated credentials
@@ -128,8 +127,7 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
    Copy all the files in the Handoff Scripts package to this directory.  
    To ensure consistency, make sure the scripts are marked read-only.
 6. Run the following command from command shell:  
-   ```
-   cd C:\rvbd_handoff_scripts
+   ```cd C:\rvbd_handoff_scripts
    C:\Python34\python.exe setup.py
    ```
    This will start the credentials mgmt script.  
