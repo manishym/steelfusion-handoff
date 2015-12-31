@@ -59,7 +59,7 @@ VADP_CLEANUP = WORK_DIR + r'\vadp_cleanup.pl'
 VADP_SETUP = WORK_DIR + r'\vadp_setup.pl'
 HANDOFF_LOG_FILE = WORK_DIR + r'\handoff.txt'
 
-# Generic paramaters
+# Generic parameters
 REQUEST_TIMEOUT = 600
 
 def set_logger():

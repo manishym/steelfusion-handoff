@@ -61,6 +61,7 @@ class hp_sssu(object):
 
     def runCommand(self, command):
         """ runCommand: Runs command from the shell prompt. Exit if unsuccessful """
+        #print ("Returned: %s" % stdout)
         proc = subprocess.Popen(
             command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,)
         try:
