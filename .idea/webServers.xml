@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="30a4beb9-62f0-447b-9375-84b193483b5e" name="WindowsProxy" url="http://localhost">
+        <fileTransfer mountedRoot="/Volumes/C/rvbd_handoff_scripts" accessType="MOUNT" />
+      </webServer>
+    </option>
+  </component>
+</project>

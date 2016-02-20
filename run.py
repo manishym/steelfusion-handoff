@@ -63,9 +63,9 @@ def main():
     api_path = "%s/src/libs/%s/SteelFusionHandoff.py" % (os.path.abspath(os.path.dirname(sys.argv[0])), args.array_model)
     if not(os.path.isfile(api_path)):
         if args.array_model is not None:
-            print("Array type '%s' is unknown." % args.array_model, file=sys.stderr)
+            print("Array type '%s' is unknown." % args.array_model)
         else:
-            print("--array-model parameter is missing.", file=sys.stderr)
+            print("--array-model parameter is missing.")
         exit (1)
     try:
         # Cleaning up arguments used only by this module
@@ -78,7 +78,7 @@ def main():
         retcode = subprocess.call(path_list, shell=False)
         sys.exit(retcode)
     except OSError as e:
-        print("Execution failed %s" % e, file=sys.stderr)
+        print("Execution failed %s" % e)
         exit (1)
 
 if __name__ == '__main__':

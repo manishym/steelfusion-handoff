@@ -1,4 +1,9 @@
 --------------------------------------------------
+# Important information
+--------------------------------------------------
+Snapshot Handoff Scripts support ESXi Proxy servers up to version 5.5 Update2
+
+--------------------------------------------------
 # Snapshot Handoff Script
 --------------------------------------------------
 This document describes how to setup handoff host with SteelFusion handoff scripts.  
@@ -10,7 +15,7 @@ All rights reserved.
 ---------------------------------------------------
 # Script Version
 ---------------------------------------------------
-v1.1.0-12162015
+v1.1.1-02182016
 
 ---------------------------------------------------
 # Hardware Tested
@@ -24,7 +29,8 @@ v1.1.0-12162015
 |hp3par_v1      |3PAR                   |7200 / v3.1.3 MU1                  |FC     |VMware     |Mgmt Console CLI 4.6.1 and 3PAR Client v3.3|3.6.0/3.6.0                |n/a        |07/13/2015     |    	No Proxy mount functionality|
 |compellent_v1  |Compellent	            |4020 and 8000/6.5.20               |iSCSI	|VMware	    |Storage Center Command Set 7.01.01.002	    |4.1/4.0	                |VEEAM	    |03/26/2014     |1. SKIP_VM_REGISTRATION=1; 2. admin user hardcoded; 3. compellent_cred.ps1 manages admin credentials for the array|
 |hpeva          |HP                     |EVA 8400, HSV340, 10001000 Firmware|FC	    |VMware	    |HP P6000 SSSU CLI v10.3.4	                |3.6.0/3.6.0	            |VEEAM	    |12/01/2015 	|1. Requires -system argument; 2. SKIP_VM_REGISTRATION=1; 3. Bugfix: LUN mount on ESXi; 4. Bugfix: snapshot cleanup; 5.Doc: http://h20566.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c03375122&lang=en-us&cc=us; 6. HP SSSU:https://h20392.www2.hpe.com/portal/swdepot/displayProductInfo.do?productNumber=P6000_CV10.3|
-|hpmsa_v1       |HP                     |MSA	P2000 G3/Bundle v. TS201R015|FC	    |VMware	    |SOAP Web API	                            |3.6.0/3.6.0 and 4.1.0/4.1.0|CA Arcserve|12/16/2015     |1. Upgraded VADP to version 4.2.0|
+|hpmsa_v1       |HP                     |MSA	P2000 G3/Bundle v. TS201R015|FC	    |VMware	    |SOAP Web API	                            |3.6.0/3.6.0 and 4.1.0/4.1.0|CA Arcserve|12/16/2015     |1. Upgraded VADP to version 4.1.0|
+|hpmsa_v1       |HP                     |MSA	P2040 G3/Firmware  GL210R004|FC	    |VMware	    |SOAP Web API	                            |4.0.0/4.1.0 and 4.1.0/4.1.0|CA Arcserve|12/16/2015     |1. Upgraded VADP to version 4.1.0|
 
 ---------------------------------------------------
 # Preparing the Handoff Host
@@ -63,7 +69,7 @@ Since it stores credentials for storage array, we recommend:
 ---------------------------------------------------
 Granite Core dev team has provided the following package can help ease the
 deployment of Snapshot Handoff. Please note that all of these scripts
-MUST be installed in the WORK_DIR.
+MUST be installed in the WORK_DIR. IDE used is JetBrains PyCharm v4.5.
 
 1. configure.py  
 This is a python script that allows the customers to store credentials
@@ -126,7 +132,7 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
 5. Create a directory 'C:\rvbd_handoff_scripts'.  
    Copy all the files in the Handoff Scripts package to this directory.  
    To ensure consistency, make sure the scripts are marked read-only.
-6. Run the following command from command shell:  
+6. Run the following command from command shell: 
    ```cd C:\rvbd_handoff_scripts
    C:\Python34\python.exe setup.py
    ```
