@@ -305,7 +305,7 @@ def delete_cloned_lun(cdb, sdb, server, lun_serial):
 
     script_log("Unmapping cloned lun with serial " + str(clone_serial))
     out, err, status = execute_script("-operation UNMOUNT -serial %s -array %s -mount %s" %\
-                                      (serial, server, clone_serial))
+                                      (lun_serial, server, clone_serial))
     if status != 0:
         print ("Failed to delete cloned lun " + str(err))
         return

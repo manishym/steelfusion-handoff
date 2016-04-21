@@ -1,3 +1,8 @@
+1.2.0 - 2016/03/01
+ * Support for HP MSA array snapshot
+ * Fixed HP EVA snapshot LUN naming
+ * Fixed VADP ESXi host query bug
+
 1.1.0 - 2015/12/01
  * Support for Multiple Appliances with --array-modely key
  * Support for HP EVA multiple array snapshot
@@ -12,7 +17,7 @@
  * Fixed VADP datastore iteration bug
 
 1.0.1
- * Fix VADP VM re-configuration error due to incorrect temp path
+ * Fixed VADP VM re-configuration error due to incorrect temp path
 
 1.0.0 - 2015/10/16
  * Initial release.

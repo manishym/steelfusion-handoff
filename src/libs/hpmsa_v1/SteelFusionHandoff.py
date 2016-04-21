@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 ###############################################################################
 #
-# (C) Copyright 2014 Riverbed Technology, Inc
+# (C) Copyright 2016 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -55,12 +55,19 @@ from lxml import etree
 # Paths for VADP scripts
 PERL_EXE = r'"C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\bin\perl.exe" '
 WORK_DIR =  r'C:\rvbd_handoff_scripts'
-VADP_CLEANUP = WORK_DIR + r'\vadp_cleanup.pl'
-VADP_SETUP = WORK_DIR + r'\vadp_setup.pl'
+VADP_CLEANUP = r'\vadp_cleanup.pl'
+VADP_SETUP = r'\vadp_setup.pl'
 HANDOFF_LOG_FILE = WORK_DIR + r'\handoff.txt'
 
-# Generic parameters
+# Generic paramaters
 REQUEST_TIMEOUT = 600
+# Per KB: https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=1003955
+MAX_ESX_LUN_ID = 254
+
+# Configuration for Veeam or Commvault backup software
+# Enables incremental backup support
+# Set it to '0' to disable
+SKIP_VM_REGISTRATION = '1'
 
 def set_logger():
     logging.basicConfig(filename= HANDOFF_LOG_FILE, level=logging.DEBUG,
@@ -82,10 +89,9 @@ def set_script_path(prefix):
 
 	prefix : full path of directory in which the VADP scripts reside
     '''
-    global WORK_DIR, VADP_CLEANUP, VADP_SETUP
+    global WORK_DIR
     WORK_DIR = prefix
-    VADP_CLEANUP = WORK_DIR + r'\vadp_cleanup.pl'
-    VADP_SETUP = WORK_DIR + r'\vadp_setup.pl'
+
 
 def assert_response_ok(obj):
     """Parses the XML returned by the device to check the return code.
@@ -101,7 +107,7 @@ def assert_response_ok(obj):
             elif prop.get("name") == "response":
                 ret_str = prop.text
         if ret_code != "0":
-            script_log('There was a problem with the previous operation.')
+            script_log('There was a problem with the operation.')
             script_log(ret_str)
             exit(1)
         else:
@@ -217,6 +223,7 @@ def create_snap(cdb, sdb, rdb, server, serial, snap_name,
     assert_response_ok(obj)
 
     breakloop = False
+    volname = ''
     for obj in obj.iter():
         if breakloop:
             break
@@ -284,7 +291,7 @@ def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
     # Check if we are removing a protected snapshot
     if protected_snap == snap_name:
         if clone_serial:
-            array_volname = clone_serial[1:7]+clone_serial[10:15]+'20000'+clone_serial[16:33]
+            array_volname = clone_serial[1:7]+clone_serial[10:16]+'0000'+clone_serial[16:33]
         # Deleting a protected snap. Un-mount the clone from the proxy host
         if not unmount_proxy_backup(cdb, sdb, serial, proxy_host,
                                     datacenter, include_hosts, exclude_hosts):
@@ -328,6 +335,7 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     obj = etree.XML(volumes.text.encode('utf-8'))
 
     breakloop = False
+    volname = ''
     for obj in obj.iter():
         if breakloop:
             break
@@ -342,8 +350,6 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
                     script_log("Creating snapshot with volume: " + volname + '.\n')
                     breakloop = True
                     break
-                else:
-                    volname = ''
 
     #If the name doesn't exist, will need to error with LUN serial not found.
 
@@ -362,45 +368,73 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     createsnapshot = base_url + "/create/snapshots" + "/" + "volumes/" + volname + "/" + array_volname
     createsnap = requests.get(createsnapshot, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(createsnap.text.encode('utf-8')).find("OBJECT")
+    # script_log('SreateSnap Returned object: ' + createsnap.text.encode('utf-8'))
     assert_response_ok(obj)
     script_log('created snapshot ' + array_volname)
-    time.sleep(1)
+    #time.sleep(1)
+
+    #Check snapshot status:
+    gettask = base_url + "/show/snapshots"
+    snaps = requests.get(gettask, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
+    obj = etree.XML(snaps.text.encode('utf-8')).find("OBJECT")
+    # script_log('ShowSnapshots Returned object: ' + tasks.text.encode('utf-8'))
+    # assert_response_ok(obj)
 
     #putting the info into the database so we know what to remove when we want to.
     rdb.insert_snap_info(snap_name, array_volname)
 
     #Assign initiator to snapshot.
-
     #CLI would be: map volume access read-write host 50014380029baa82 lun 99 rvbd_test1
 
-    # Get next available LUN number.
-    luns = []
+    # Get parent volume LUN number.
     getVLUN = base_url + "/show/host-maps"
     tree = requests.get(getVLUN, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
+
     obj = etree.XML(tree.text.encode('utf-8'))
+    parentLUN = ''
+    for object in obj.iter('OBJECT'):
+        foundLUN=False
+        for volumeName in object.iterfind('PROPERTY[@name="volume-name"]'):
+            # script_log('volume-name: ' + volumeName.text)
+            if volumeName.text == volname:
+                foundLUN=True
+        if foundLUN:
+            for lunid in object.iterfind('PROPERTY[@name="lun"]'):
+                parentLUN = lunid.text
+                script_log('Parent LUN id: ' + parentLUN)
+                break
+            break
 
-    for obj in obj.iter():
-        if obj.get("basetype") != "host-view-mappings":
-            continue
+    # Generate random LUN # if parent volume is not mapped.
+    # Random LUN id also prevents same LUN id being assigned to concurrent snapshot requests
+    if parentLUN == '':
+        script_log("Unable to find parent volume LUN number. This may be due to Parent LUN not mapped for SteelFusion Core. Proceeding with random LUN number.")
+        # sys.exit(1)
+        luns = range(1, MAX_ESX_LUN_ID)
+        for obj in obj.iter():
+            if obj.get("basetype") != "host-view-mappings":
+                continue
+            for prop in obj.iter("PROPERTY"):
+                if prop.get("name") == "lun":
+                    if prop.text is not None:
+                        script_log("Lun found :" + prop.text)
+                        if int(prop.text) in luns:
+                            luns.remove(int(prop.text))
+        # Generating random LUN number
+        parentLUN = str(random.choice(luns))
 
-        for prop in obj.iter("PROPERTY"):
-            if prop.get("name") == "lun":
-                luns.append(int(prop.text))
-
-    lun = 1
-    lun += max(luns)
-
-    # Map volume with the new LUN number.
+    # Map volume with the LUN number.
     # Requires volume_name, wwpns
-    mapLUN = base_url + "/map/volume/access/read-write/host/" + accessgroup + "/lun/" + str(lun) + "/" + array_volname
+    mapLUN = base_url + "/map/volume/access/read-write/host/" + accessgroup + "/lun/" + parentLUN + "/" + array_volname
     script_log('mapping LUN with url: '+ mapLUN)
-    time.sleep(5)
-    assignmapping = requests.get(mapLUN, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
-    time.sleep(5)
+
     assignmapping = requests.get(mapLUN, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
     obj = etree.XML(assignmapping.text.encode('utf-8')).find("OBJECT")
     assert_response_ok(obj)
+    #time.sleep(5)
+    # script_log('Response was: '+ assignmapping.text.encode('utf-8'))
     script_log('Assigned mapping on MSA to ' + accessgroup + '.')
+
     #Getting the LUN serial number from the cloned LUN:
     requestvolumes = base_url + "/show/volume-names"
     volumes = requests.get(requestvolumes, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
@@ -408,6 +442,7 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     assert_response_ok(obj)
 
     breakloop = False
+    lunserial == ''
     for obj in obj.iter():
         if breakloop:
             break
@@ -455,7 +490,7 @@ def unmap_cloned_lun(cdb, sdb, server, lun_serial):
     lun_serial : the lun serial for which we find the last cloned lun
     '''
     script_log('Unmapping previous lun from the ESXi proxy with serial: '+lun_serial)
-    array_volname = lun_serial[1:7]+lun_serial[10:15]+'20000'+lun_serial[16:33]
+    array_volname = lun_serial[1:7]+lun_serial[10:16]+'0000'+lun_serial[16:33]
     clone_lun, snap_name, group = sdb.get_clone_info(lun_serial)
     script_log('cloned_lun is: '+ clone_lun)
     clone_serial = clone_lun
@@ -471,7 +506,7 @@ def unmap_cloned_lun(cdb, sdb, server, lun_serial):
     unmap = base_url + "/unmap/volume" + "/" + "host" + "/" + group + "/" + array_volname
     try:
         unmap_lun = requests.get(unmap, verify=False, headers=headers, timeout=REQUEST_TIMEOUT)
-        obj = etree.XML(deletesnap.text.encode('utf-8')).find("OBJECT")
+        # obj = etree.XML(deletesnap.text.encode('utf-8')).find("OBJECT")
     except Exception:
         pass
     script_log ("Snapshot " + array_volname + " unmapped from " + group + "\n")
@@ -507,10 +542,10 @@ def mount_proxy_backup(cdb, sdb, cloned_lun_info, snap_name,
     # Create the command to be run
     cmd = ('%s "%s" --server %s --username %s --password %s --luns %s ' \
            '--datacenter "%s" --include_hosts "%s" --exclude_hosts "%s" ' \
-           '--extra_logging 1' %\
-           (PERL_EXE, VADP_SETUP, proxy_host,
+           '--extra_logging 1 --skip_vm_registration %s' %\
+           (PERL_EXE, WORK_DIR + VADP_SETUP, proxy_host,
             username, password, cloned_lun_serial,
-            datacenter, include_hosts, exclude_hosts))
+            datacenter, include_hosts, exclude_hosts, SKIP_VM_REGISTRATION))
 
     script_log("Command is: " + cmd)
     proc = subprocess.Popen(cmd,
@@ -559,10 +594,10 @@ def unmount_proxy_backup(cdb, sdb, lun_serial, proxy_host,
 
     cmd = ('%s "%s" --server %s --username %s --password %s --luns %s ' \
            '--datacenter "%s" --include_hosts "%s" --exclude_hosts "%s" '\
-           '--extra_logging 1' %\
-           (PERL_EXE, VADP_CLEANUP,
+           '--extra_logging 1 --skip_vm_registration %s' %\
+           (PERL_EXE, WORK_DIR + VADP_CLEANUP,
            proxy_host, username, password, cloned_lun,
-           datacenter, include_hosts, exclude_hosts))
+           datacenter, include_hosts, exclude_hosts, SKIP_VM_REGISTRATION))
 
     script_log("Command is: " + cmd)
     proc = subprocess.Popen(cmd,
@@ -686,8 +721,8 @@ if __name__ == '__main__':
     def create_login_hash(username, password):
         login_string = "{0}_{1}".format(username, password)
         return hashlib.md5(login_string).hexdigest()
-
     base_url = 'https://' + array + '/api'
+    # base_url = 'http://' + array + '/api'
     login_hash = create_login_hash(username, password)
     url_login = base_url + "/login/{0}".format(login_hash)
     req_login = requests.get(url_login, verify=False)
@@ -699,7 +734,11 @@ if __name__ == '__main__':
             sessionKey = prop.text
             break
     headers = {'datatype': 'api', 'sessionKey': sessionKey}
-    script_log('successfully logged into MSA array.')
+    if sessionKey is not None:
+        script_log('Successfully logged into MSA array.')
+    else:
+        script_log('Failed to login into MSA array.')
+        sys.exit(errno.EINVAL)
 
     if options.operation == 'HELLO':
         check_lun(conn, serial)

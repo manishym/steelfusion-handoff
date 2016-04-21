@@ -100,7 +100,7 @@ sub fix_vm {
                     $dir_path = substr($file_path, 0, $fname_idx) . "/";
                 }
                 my $fixed_fname = $dir_path . $fname;
-                # Check if the disk is present in the disk id list, 
+                # Check if the disk is present in the disk id list,
                 if (defined $disk_ids->{$fname}) {
                     my $disk_id = $disk_ids->{$fname}[0];
                     my $disk_ds_name = $disk_ids->{$fname}[1];
@@ -189,7 +189,7 @@ sub get_current_disks {
     foreach (@{$vm->layoutEx->disk}) {
         my $disk = $_;
         my $id = $disk->key;
-        # Determine the latest name of the disk 
+        # Determine the latest name of the disk
         my $chain = $disk->chain;
         my $top_vmdk = $chain->[-1];
         eval {
@@ -245,7 +245,7 @@ sub get_latest_disk_snaps {
     foreach (@{$latest_snapshot->disk} ) {
         my $disk = $_;
         my $id = $disk->key;
-        # Determine the latest name of the disk 
+        # Determine the latest name of the disk
         my $chain = $disk->chain;
         my $top_vmdk = $chain->[-1];
         my $filekeys = $top_vmdk->fileKey;
@@ -260,7 +260,7 @@ sub get_latest_disk_snaps {
     return \%disk_snapshot_hash;
 }
 
-# The file names within the vmx have datastore name as follows: 
+# The file names within the vmx have datastore name as follows:
 # [<ds_name>] <vm_dir>/<filepath>
 # This function splits this and returns each of them
 sub split_file_path {

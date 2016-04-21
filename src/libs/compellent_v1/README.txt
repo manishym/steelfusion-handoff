@@ -133,7 +133,7 @@ vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
 
    If it is a Compellent Storage array, you will need to run the compellent_cred.ps1 script.
    On running this script, it will prompt the user for the storage array password, please
-   enter the exact password.
+   enter the exact password. You may need to run "Set-ExecutionPolicy RemoteSigned"
 
 7. Reboot the Windows VM. This is just to ensure that the changes 
    you made stick and are picked up properly by Windows OS.

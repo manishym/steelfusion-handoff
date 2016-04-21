@@ -1,7 +1,7 @@
 --------------------------------------------------
 # Important information
 --------------------------------------------------
-Snapshot Handoff Scripts support ESXi Proxy servers up to version 5.5 Update2
+Current snapshot Handoff Scripts support ESXi Proxy servers up to version 5.5 Update2
 
 --------------------------------------------------
 # Snapshot Handoff Script
@@ -35,7 +35,8 @@ v1.1.1-02182016
 ---------------------------------------------------
 # Preparing the Handoff Host
 ---------------------------------------------------
-The scripts have been tested on Windows 2K8 R2, Windows 2012
+The scripts have been tested on Windows 2K8 R2, Windows 2012:   
+
 1. Install Python3.4.0+ (https://www.python.org/downloads/) under C:\Python34 for "all" users.
 2. Install VMware's Perl SDK. The minimum required version is "VMware vSphere SDK for Perl 5.5".
    By default, the SDK is installed at 'C:\Program Files (x86)\VMware'.  
@@ -55,12 +56,13 @@ NOTE: v1 scrips may have other library dependencies. Please check _v1 scripts fo
 # Managing Security of data
 ---------------------------------------------------
 The handoff host must be configured with an Administrator account
-that will be used for running the handoff scripts.
+that will be used for running the handoff scripts.  
 Note that the default script provided here accesses and reads the
-credential database setup using the setup.py script.
+credential database setup using the setup.py script.  
 Since it stores credentials for storage array, we recommend:
+
 1. Run the scripts using Administrator account
-2. Set 'Administrator' only permissions on the WORK_DIR.
+2. Set 'Administrator' only permissions on the WORK_DIR.  
    This will ensure no one else has access to the credentials database.
 
 
@@ -85,23 +87,23 @@ IP/hostname and  associated credentials
 
 2. run.py  
 This is a full-working script that also supports
-proxy backup operation for VMware luns.
-The script arguments are:
-array-model : the type of the array we are running scripts against. Reference supported array table for the correct array name.
-work-dir : WORK_DIR for handoff
-storage-array : storage array ip/hotname
-system: storage array system, this key is only for EVA managed arrays
-proxy-host : ESX Proxy Server ip/hotname
-access-group : SAN Initiator group to which proxy host is mapped
+proxy backup operation for VMware luns.  
+The script arguments are:  
+array-model : the type of the array we are running scripts against. Reference supported array table for the correct array name.  
+work-dir : WORK_DIR for handoff  
+storage-array : storage array ip/hotname  
+system: storage array system, this key is only for EVA managed arrays  
+proxy-host : ESX Proxy Server ip/hotname  
+access-group : SAN Initiator group to which proxy host is mapped  
 protect-category : Snapshot category for which proxy backup must be run.
 
 3. Proxy Mounting Scripts.  
-The following are the perl scripts implement LUN mounting.
-Logger.pm LogHandler.pm
+The following are the perl scripts implement LUN mounting.  
+Logger.pm LogHandler.pm  
 vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
 
 4. Script logging.  
-Script log file is located in WORK_DIR\log\ folder.
+Script log file is located in WORK_DIR\log\ folder.  
 Script also tracks activity under Microsoft's System Event Log.
 
 5. Work files.  
@@ -111,7 +113,7 @@ credentials, track snapshot names, track mounted LUNs
 and store resignatured virtual machine vmx files.
 
 6. SAN libraries and scripts.  
-All SAN specific scripts are stored in WORK_DIR\lib\<storage type>
+All SAN specific scripts are stored in WORK_DIR\lib\<storage type>  
 Any SAN library that has _v1 in the folder name, has all working scripts and duplicates in the same folder.
 
 ------------------------------------------------------
@@ -126,15 +128,16 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
    Under 'Advanced Settings' -> 'Environment Variables' for 'Computer' 'Properties'  
    Edit the 'Path' Environment Variable for System (and not PATH for User).  
    Append this at the end:  
-   'C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\bin;C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\lib;'.
+   'C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\bin;C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\lib;'  
    Press OK until you exit the dailogue boxes.
 4. Install the HP SSSU SDK.
 5. Create a directory 'C:\rvbd_handoff_scripts'.  
    Copy all the files in the Handoff Scripts package to this directory.  
    To ensure consistency, make sure the scripts are marked read-only.
-6. Run the following command from command shell: 
-   ```cd C:\rvbd_handoff_scripts
-   C:\Python34\python.exe setup.py
+6. Run the following command from command shell:  
+   ```
+   cd C:\rvbd_handoff_scripts
+   C:\Python34\python.exe configure.py
    ```
    This will start the credentials mgmt script.  
    Press appropriate option to first setup the DB.  
@@ -144,9 +147,9 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
 7. Reboot the Windows VM. This is just to ensure that the changes
    you made stick and are picked up properly by Windows OS.
 8. On Granite Core, create a Handoff Configuration (under Snapshot -> Handoff Hosts).
-   Give the IP address/DNS name of the Windows VM, the user and password for Administrator.
+   Give the IP address/DNS name of the Windows VM, the user and password for Administrator.  
    Use the following for script path:  
-   'C:\Python34\python.exe C:\rvbd_handoff_scripts\src\run.py '
+   'C:\Python34\python.exe C:\rvbd_handoff_scripts\src\run.py '  
    Use the following for script args:  
    '--array-model ARRAYMODEL --work-dir c:\rvbd_handoff_scripts --array STORAGE_ARRAY --system EVA_STORAGE_SYSTEM --proxy-host PROXY_HOST --access-group proxy_esxi --protect-category daily'  
    Note that STORAGE_ARRAY and PROXY_HOST are IP addresses/DNS names for storage array and proxy ESX server.  
@@ -155,5 +158,5 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
    '--array-model hpeva --work-dir c:\rvbd_handoff_scripts --array 192.168.1.216 --system EVA-PROD --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'  
    Note: access-group is the permission on the lun, just make sure the wwn has permission to access the newly created volume  
    Press 'Add Handoff Host'.  
-9. Now assign this handoff host to a LUN (LUN -> Snapshots -> Configuration -> Handoff Host).
+9. Now assign this handoff host to a LUN (LUN -> Snapshots -> Configuration -> Handoff Host).  
    Use 'Test Handoff Host' to validate configuration

@@ -10,6 +10,6 @@ setup(
     url='http://github.com/Riverbed/steelfusionhandoff/',
     license='LICENSE',
     description='SteelFusion Handoff Scripts.',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     install_requires=[],
 )
