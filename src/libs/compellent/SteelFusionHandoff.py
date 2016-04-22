@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# (C) Copyright 2014 Riverbed Technology, Inc
+# (C) Copyright 2016 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,45 @@
 
 
 ###############################################################################
-# Sample Snapshot Handoff Script
-# All operations are a no-op.
-# Since we do not really create a clone, the mount operation
-# and the unmount operation are going to fail on ESX.
+# Compellent Snapshot Handoff Main Script
 ###############################################################################
 import optparse
 import sys
 import errno
-import shlex
 import subprocess
-
-# These are used for generating random clone serial
-import string
-import random
 import logging
-
-# Script DB is used to store/load the cloned lun
-# information and the credentials
-import script_db
-
 # For setting up PATH
 import os
 
-# Paths for VADP scripts
+# Script DB is used to store/load the cloned lun
+# information and the credentials
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../../..'))
+from src import script_db
+
+
+# Configuration defaults
+CRED_DB = r'\var\cred.db'
+SCRIPT_DB = r'\var\script.db'
+SNAP_DB = r'\var\replay.db'
+WORK_DIR =  r'C:\rvbd_handoff_scripts'
+HANDOFF_LOG_FILE = r'\log\handoff.log'
+
+# Path for Compellent scripts
+COMPELLENT_SCRIPT = os.path.abspath(os.path.dirname(__file__)) + r'\api.ps1'
+
+# Path for VADP scripts
 PERL_EXE = r'"C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\bin\perl.exe" '
-WORK_DIR =  r'C:\rvbd_handoff_scripts\src\libs\compellent_v1'
-VADP_CLEANUP = WORK_DIR + r'\vadp_cleanup.pl'
-VADP_SETUP = WORK_DIR + r'\vadp_setup.pl'
-COMPELLENT_SCRIPT = WORK_DIR + r'\compellent.ps1'
-HANDOFF_LOG_FILE = WORK_DIR + r'\handoff.txt'
+VADP_CLEANUP = r'\src\libs\vadp\vadp_cleanup.pl'
+VADP_SETUP = r'\src\libs\vadp\vadp_setup.pl'
+
+# Configuration for Veeam or Commvault backup software
+# Enables incremental backup support
+# Set it to '0' to disable
+SKIP_VM_REGISTRATION = '1'
+
 
 def set_logger():
-    logging.basicConfig(filename= HANDOFF_LOG_FILE, level=logging.DEBUG,
+    logging.basicConfig(filename=(WORK_DIR + HANDOFF_LOG_FILE), level=logging.DEBUG,
                         format='%(asctime)s : %(levelname)s: %(message)s',
                          datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -72,13 +78,11 @@ def script_log(msg):
 def set_script_path(prefix):
     '''
 	Sets the paths accroding to the prefix.
-	
-	prefix : full path of directory in which the VADP scripts reside
+	prefix : full path to work directory
     '''
-    global WORK_DIR, VADP_CLEANUP, VADP_SETUP
+    global WORK_DIR
     WORK_DIR = prefix
-    VADP_CLEANUP = WORK_DIR + r'\vadp_cleanup.pl'
-    VADP_SETUP = WORK_DIR + r'\vadp_setup.pl'
+    set_logger()
 
 def execute_script(cmd):
     ps_command_pref = '"cmd /c echo . | '
@@ -95,7 +99,7 @@ def execute_script(cmd):
     script_log("STATUS: " + str(status))
     return (out, err, status)
 
-def check_lun(server, serial):
+def check_lun(cdb, server, serial):
     '''
     Checks for the presence of lun
 
@@ -105,7 +109,8 @@ def check_lun(server, serial):
     Exits the process with code zero if it finds the lun,
     or non-zero code otherwise
     '''
-    out, err, status = execute_script("-operation HELLO -serial %s -array %s" % (serial, server))
+    user, pwd = cdb.get_enc_info(server)
+    out, err, status = execute_script("-op HELLO -s %s -array %s -u %s -p %s" % (serial, server, user, pwd))
     if (status != 0):
         print ("Error occurred: " + str(err))
     else:
@@ -157,7 +162,7 @@ def create_snap(cdb, sdb, rdb, server, serial, snap_name,
         # Un-mount the previously mounted cloned lun from proxy host
         if unmount_proxy_backup(cdb, sdb, serial, proxy_host, datacenter, include_hosts, exclude_hosts) :
             # Delete the cloned snapshot
-            delete_cloned_lun(cdb, sdb, server, serial)
+            delete_cloned_lun(cdb, sdb, server, serial, access_group)
             # Create a cloned snapshot lun form the snapshot
             cloned_lun_serial = create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, access_group)
             # Mount the snapshot on the proxy host
@@ -170,22 +175,23 @@ def create_snap(cdb, sdb, rdb, server, serial, snap_name,
     # Else, either the snapshot is not protected
     # or the proxy unmount operation failed. In such a case
     # just create the snapshot and do not proxy mount it
-    out, err, status = execute_script("-operation SNAP_CREATE -serial %s -array %s " % (serial, server))
+    user, pwd = cdb.get_enc_info(server)
+    out, err, status = execute_script("-op SNAP_CREATE -s %s -array %s -u %s -p %s" % (serial, server, user, pwd))
     if status != 0:
         print ("Failed to create snapshot " + str(err))
         sys.exit(1)
-	
+
   
     decoded = out.decode('utf-8')
     out_split = decoded.strip().split('\n')[0].split(":")[-1]
-    script_log("The index is " + str(out_split))
+    script_log("Created snapshot successfully, index is " + str(out_split))
     # Script finished successfully
     rdb.insert_snap_info(snap_name, out_split)
     print (snap_name)
     sys.exit(0)
 
 
-def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
+def remove_snap(cdb, sdb, rdb, server, serial, snap_name, access_group, proxy_host,
                 datacenter, include_hosts, exclude_hosts):
     '''
     Removes a snapshot
@@ -219,7 +225,7 @@ def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
                                     datacenter, include_hosts, exclude_hosts):
             sys.exit(1)
         # Delete the snapshot cloned lun
-        delete_cloned_lun(cdb, sdb, server, serial)
+        delete_cloned_lun(cdb, sdb, server, serial, access_group)
 
     # Expire the replay    
     
@@ -228,13 +234,14 @@ def remove_snap(cdb, sdb, rdb, server, serial, snap_name, proxy_host,
         script_log("The replay index is  " + replay)
 
     if replay:
-        out, err, status = execute_script("-operation SNAP_REMOVE -serial %s -array %s -replay %s" %\
-                                          (serial, server, replay))
+        user, pwd = cdb.get_enc_info(server)
+        out, err, status = execute_script("-op SNAP_REMOVE -s %s -array %s -u %s -p %s -replay %s" %\
+                                          (serial, server, user, pwd, replay))
         if status != 0:
             print ("Failed to remove snapshot " + str(err))
             sys.exit(1)
-	
-    rdb.delete_clone_info(snap_name)
+
+    rdb.delete_snap_info(snap_name)
     sys.exit(0)
 
 
@@ -253,7 +260,8 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     we exit with status zero so that Granite Core ACKs the Edge.
     '''
     script_log('Starting create_snap_clone')
-    out, err, status = execute_script("-operation CREATE_SNAP_AND_MOUNT -serial %s -array %s -accessgroup %s " % (serial, server, accessgroup))
+    user, pwd = cdb.get_enc_info(server)
+    out, err, status = execute_script("-op CREATE_MOUNT -s %s -array %s -u %s -p %s -ag %s" % (serial, server, user, pwd, accessgroup))
     if status != 0:
         msg = "Failed to create snapshot " + str(err)
         script_log(msg)
@@ -282,7 +290,7 @@ def create_snap_clone(cdb, sdb, rdb, server, serial, snap_name, accessgroup):
     return cloned_lun_serial        
 
  
-def delete_cloned_lun(cdb, sdb, server, lun_serial):
+def delete_cloned_lun(cdb, sdb, server, lun_serial, accessgroup):
     '''
     For the given serial, finds the last cloned lun
     and delete it.
@@ -304,8 +312,9 @@ def delete_cloned_lun(cdb, sdb, server, lun_serial):
         return
 
     script_log("Unmapping cloned lun with serial " + str(clone_serial))
-    out, err, status = execute_script("-operation UNMOUNT -serial %s -array %s -mount %s" %\
-                                      (lun_serial, server, clone_serial))
+    user, pwd = cdb.get_enc_info(server)
+    out, err, status = execute_script("-op UNMOUNT -s %s -array %s -u %s -p %s -mount %s -ag %s" %\
+                                      (lun_serial, server, user, pwd, clone_serial, accessgroup))
     if status != 0:
         print ("Failed to delete cloned lun " + str(err))
         return
@@ -343,10 +352,10 @@ def mount_proxy_backup(cdb, sdb, cloned_lun_info, snap_name,
     # Create the command to be run
     cmd = ('%s "%s" --server %s --username %s --password %s --luns %s ' \
            '--datacenter "%s" --include_hosts "%s" --exclude_hosts "%s" ' \
-           '--extra_logging 1' %\
-           (PERL_EXE, VADP_SETUP, proxy_host, 
+           '--extra_logging 1 --skip_vm_registration %s' %\
+           (PERL_EXE, WORK_DIR + VADP_SETUP, proxy_host,
             username, password, cloned_lun_serial,
-            datacenter, include_hosts, exclude_hosts))
+            datacenter, include_hosts, exclude_hosts, SKIP_VM_REGISTRATION))
     
     script_log("Command is: " + cmd)
     proc = subprocess.Popen(cmd,
@@ -395,10 +404,10 @@ def unmount_proxy_backup(cdb, sdb, lun_serial, proxy_host,
 	
     cmd = ('%s "%s" --server %s --username %s --password %s --luns %s ' \
            '--datacenter "%s" --include_hosts "%s" --exclude_hosts "%s" '\
-           '--extra_logging 1' %\
-           (PERL_EXE, VADP_CLEANUP,
+           '--extra_logging 1 --skip_vm_registration %s' %\
+           (PERL_EXE, WORK_DIR + VADP_CLEANUP,
            proxy_host, username, password, cloned_lun,
-           datacenter, include_hosts, exclude_hosts))
+           datacenter, include_hosts, exclude_hosts, SKIP_VM_REGISTRATION))
 
     script_log("Command is: " + cmd)
     proc = subprocess.Popen(cmd,
@@ -498,15 +507,16 @@ def main():
     # Set the working dir prefix
     set_script_path(options.work_dir)
 
-    # Credentials db must be initialized using the cred_mgmt.py file
-    cdb = script_db.CredDB(options.work_dir + r'\cred_db')
-	
+    # Credentials db must be initialized by running the setup.py file in the root
+    global cdb
+    cdb = script_db.CredDB(options.work_dir + CRED_DB)
+
     # Initialize the script database
-    sdb = script_db.ScriptDB(options.work_dir + r'\script_db')
+    sdb = script_db.ScriptDB(options.work_dir + SCRIPT_DB)
     sdb.setup()
 
     # Create snap to replay mapping database
-    rdb = script_db.SnapToReplayDB(options.work_dir + r'\replay_db')
+    rdb = script_db.SnapToReplayDB(options.work_dir + SNAP_DB)
     rdb.setup()
     
     # Setup server/lun info
@@ -526,7 +536,7 @@ def main():
         compellent_serial = '00' + serial[8:14] + '-' + serial[-8:]
     
     if options.operation == 'HELLO':
-        check_lun(conn, compellent_serial)
+        check_lun(cdb, conn, compellent_serial)
     elif options.operation == 'CREATE_SNAP':   
         create_snap(cdb, sdb, rdb, conn, compellent_serial, options.snap_name, 
                     options.access_group, options.proxy_host,
@@ -534,8 +544,8 @@ def main():
                     options.exclude_hosts,
 		    options.category, options.protect_category)
     elif options.operation == 'REMOVE_SNAP':
-        remove_snap(cdb, sdb, rdb, conn, compellent_serial ,
-		    options.snap_name, options.proxy_host,
+        remove_snap(cdb, sdb, rdb, conn, compellent_serial, options.snap_name,
+                    options.access_group, options.proxy_host,
                     options.datacenter, options.include_hosts,
                     options.exclude_hosts)
     else:

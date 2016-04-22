@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# (C) Copyright 2014 Riverbed Technology, Inc
+# (C) Copyright 2016 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,14 @@
 ####Below loads Compellent Storage Center Snapin
 ###Add-PSSnapin Compellent.StorageCenter.PSSnapin
 
-# Before running the script, please run the compllent_cred.ps1
-# for the first time to create the supersecret file in c:\rvbd_handoff_scripts
-
 #Parameters for the script
-param([string]$serial = "", [string]$operation = "", [string]$category = "", [string]$replay = "", [string]$mount="", [string]$user = "RiverbedAccess", [string]$array="", [string]$accessgroup = "")
-$user = "admin"
-$pw = get-content c:\rvbd_handoff_scripts\supersecretfile.txt | convertto-securestring -key (1..16)
+#Parameters have been shortened to fit max command line length.
+param([string]$s = "", [string]$op = "", [string]$category = "", [string]$replay = "", [string]$mount="", [string]$u = "admin",  [string]$p = "", [string]$array="", [string]$ag = "")
+$serial = $s
+$operation = $op
+$accessgroup = $ag
+$user = $u
+$pw = convertto-securestring $p -AsPlainText -Force
 
 # Now this is passed as -array argument
 if (! $array) {
@@ -44,22 +45,22 @@ if (! $operation) {
 	exit 1
 }
 
-# Make sure the necessary snapins are loaded            
-$compSnapinLoaded = $FALSE            
-$currentSnapins = Get-PSSnapin            
-# Check if we need to load the snapin            
-foreach ($snapin in $currentSnapins)            
-{            
-    if ($snapin.Name -eq "Compellent.StorageCenter.PSSnapIn")            
-    {$compSnapinLoaded = $TRUE}            
-}            
+# Make sure the necessary snapins are loaded
+$compSnapinLoaded = $FALSE
+$currentSnapins = Get-PSSnapin
+# Check if we need to load the snapin
+foreach ($snapin in $currentSnapins)
+{
+    if ($snapin.Name -eq "Compellent.StorageCenter.PSSnapIn")
+    {$compSnapinLoaded = $TRUE}
+}
 
-if ($compSnapinLoaded -eq $FALSE)            
+if ($compSnapinLoaded -eq $FALSE)
     {$null = Add-PSSnapin Compellent.StorageCenter.PSSnapIn}
 
 
 $SCConnect = Get-SCConnection -Hostname $array -user $user -pass $pw
-if (! $SCConnect) 
+if (! $SCConnect)
 {
     write-host ("Failed to connect to the storage array")
     exit 1
@@ -82,13 +83,13 @@ if ($operation.Contains("HELLO")) {
 
 if($operation.Contains("UNMOUNT")) {
 	#Clean up the mounted lun
-	
+
 	if (! $mount) {
 		# We need the mount serial argument for the script
 		Write-Error "Please pass -mount parameter to the script"
 		exit 1
 	}
-	
+
 	#Define old Mounted Volume
 	$old_lun = get-scvolume -serial $mount -connection $SCConnect
 
@@ -107,20 +108,20 @@ if($operation.Contains("UNMOUNT")) {
 
 if($operation.Contains("SNAP_REMOVE")) {
 	#Clean up the replay
-	
+
 	if (! $replay) {
 		# We need the mount serial argument for the script
 		Write-Error "Please pass -replay parameter to the script"
 		exit 1
 	}
-	
+
 	# Find the snapshot
 	$snap = Get-SCReplay -Index $replay -Connection $SCConnect
 	# Need to delete this current_snap
     if ($snap) {
         Remove-SCReplay -SCReplay $snap -Connection $SCConnect -Confirm:$false
     }
-    
+
 	exit 0
 }
 
@@ -133,7 +134,7 @@ if ($operation.Contains("SNAP_CREATE")) {
     exit 0
 }
 
-if ($operation.Contains("CREATE_SNAP_AND_MOUNT")) {
+if ($operation.Contains("CREATE_MOUNT")) {
 
 	# Create a new snapshot (called replay)
 	$b = New-SCReplay $rdm_os_01 -MinutesToLive 1440 -Description RVBD_Granite_Snap -Connection $SCConnect

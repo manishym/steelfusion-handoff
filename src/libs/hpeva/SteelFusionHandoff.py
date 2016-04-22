@@ -1,7 +1,7 @@
 #!/usr/bin/python
 ###############################################################################
 #
-# (C) Copyright 2015 Riverbed Technology, Inc
+# (C) Copyright 2016 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -67,7 +67,6 @@ def set_logger():
 def script_log(msg):
     '''
     Local logs are sent to std err
-
 	msg : the log message
     '''
     sys.stderr.write(msg + "\n")
@@ -76,7 +75,6 @@ def script_log(msg):
 def set_script_path(prefix):
     '''
 	Sets the paths accroding to the prefix.
-
 	prefix : full path to work directory
     '''
     global WORK_DIR

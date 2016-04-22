@@ -1,3 +1,8 @@
+1.3.0 - 2016/04/22
+ * Refactored Compellent code to support standard libraries
+ * Fixed Compellent snapshot cleanup procedure
+ * Fixed Compellent "comman too long" cmd bug
+
 1.2.0 - 2016/03/01
  * Support for HP MSA array snapshot
  * Fixed HP EVA snapshot LUN naming

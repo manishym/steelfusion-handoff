@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# (C) Copyright 2015 Riverbed Technology, Inc
+# (C) Copyright 2016 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -67,14 +67,8 @@ Since it stores credentials for storage array, we recommend:
 ---------------------------------------------------
 Please note that all of these scripts MUST be installed in the WORK_DIR.
 
-1. script_db.py
-This is a python module that defines two classes for managing information
-on the Handoff host and act like a database. Note that this database is stored
-in binary format, and it is NOT encrypted. Any information stored in this
-database created by this module can be easily extracted by anyone who has
-access to the database file.
 
-2. cred_mgmt.py
+1. configure.py
 This is a python script that allows the customers to store credentials
 for the storage array in a local database (created using the script_db module
 mentioned above). The script allows user to:
@@ -84,14 +78,24 @@ c. Delete Host Information : This helps delete information associated with a hos
 d. Show information stored in the database for all hosts.
 
 Before using the sample scripts provided, users MUST setup the credentials database
-by running this script in the WORK_DIR. 
+by running this script in the WORK_DIR.
 
-3. compellent_cred.ps1
-This script sets up compellent storage array credentials. Username is set in compellent.ps1 file, line 33.
+2. run.py
+Main executable script that calls SAN specific SteelFusionHandoff.py snapshot management code.
 
-4. SteelFusionHandoff.py
-This is a full-working example script that also supports
-proxy backup operation for VMware luns.
+3. ./src/script_db.py
+This is a python module that defines two classes for managing information
+on the Handoff host and act like a database. Note that this database is stored
+in binary format, and it is NOT encrypted. Any information stored in this
+database created by this module can be easily extracted by anyone who has
+access to the database file.
+
+4. ./src/libs/compellent/api.ps1
+This script calls Compellent Powershell cmd-lets for storage management.
+
+5. ./src/libs/compellent/SteelFusionHandoff.py
+This is a full-working script that implements snapsho
+proxy backup operation handling for VMware luns.
 
 The script arguments are:
 work-dir : WORK_DIR for handoff
@@ -100,10 +104,9 @@ proxy-host : ESX Proxy Server
 access-group : Netapp Initiator group to which proxy host is mapped
 protect-category : Snapshot category for which proxy backup must be run.
 
-5. Proxy Backup Scripts.
+6. Proxy Backup Scripts.
 The following are the perl scripts implement proxy backup.
-Logger.pm LogHandler.pm
-vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
+Logger.pm LogHandler.pm vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
 
 ------------------------------------------------------
 # Example Installation Steps
@@ -124,16 +127,12 @@ vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
    To ensure consistency, make sure the scripts are marked read-only.
 6. Run the following command from command shell:
    cd C:\rvbd_handoff_scripts
-   C:\Python34\python.exe cred_mgmt.py
+   C:\Python34\python.exe configure.py
    This will start the credentials mgmt script.
    Press appropriate option to first setup the DB.
    Then enter host information. Note that to later change any information, re-run the same
    command (do the Setup the DB - this will erase all other information in the db).
    Add information for the proxy host (ex. PROXY_ESX) and the storage array (ex. STORAGE_ARRAY).
-
-   If it is a Compellent Storage array, you will need to run the compellent_cred.ps1 script.
-   On running this script, it will prompt the user for the storage array password, please
-   enter the exact password. You may need to run "Set-ExecutionPolicy RemoteSigned"
 
 7. Reboot the Windows VM. This is just to ensure that the changes 
    you made stick and are picked up properly by Windows OS.
@@ -144,16 +143,17 @@ vadp_setup.pl vadp_cleanup.pl vadp_helper.pl vm_common.pl vm_fix.pl
    'C:\Python34\python.exe C:\rvbd_handoff_scripts\run.py '
    Use the following for script args:
    If you are not running Proxy backups with VMware:
-   '--work-dir --array-model compellent_v1  --array <ARRAY_IP>'
+   '--work-dir --array-model compellent  --array <ARRAY_IP>'
    If you are running Proxy Backups with Vmware:
-   '--work-dir c:\rvbd_handoff_scripts\src\libs\compellent_v1 --array-model compellent_v1 --array <ARRAY_IP> --access-group <Server> --proxy-host <ESXi IP> --datacenter <Datacenter> --include-hosts <REGEX>  --protect-category daily'
+   '--work-dir c:\rvbd_handoff_scripts --array-model compellent --array <ARRAY_IP> --access-group <Server> --proxy-host <ESXi IP> --datacenter <Datacenter> --include-hosts <REGEX>  --protect-category daily'
    If you want to protect hourly, specify 'hourly' as protect-category. For manual testing use 'manual'.
 
    Note that STORAGE_ARRAY and PROXY_HOST are IP addresses/DNS names for storage array and proxy ESX server.
    They must match (6) so that the script will pick up the information for these from the credentials database.
    Ex.
-   '--work-dir c:\rvbd_handoff_scripts\src\libs\compellent_v1 --array-model compellent_v1 --storage-array chief-storage1 --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'
+   '--work-dir c:\rvbd_handoff_scripts --array-model compellent --storage-array chief-storage1 --proxy-host gen-at34 --access-group proxy_esxi --protect-category daily'
 
    Press 'Add Handoff Host'.
 9. Now assign this handoff host to a LUN (LUN -> Snapshots -> Configuration -> Handoff Host).
    User 'Test Handoff Host' to debug.   
+

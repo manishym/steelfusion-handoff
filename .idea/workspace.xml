@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ee27bb01-b501-434d-a095-2a908bfa1618" name="Default" comment="- Updated hpmsa request timeout to 600s to better handle slower SAN responses">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/libs/freenas/SteelFusionHandoff.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/libs/freenas/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/libs/hpmsa_v1/remove_current_snapshot.pl" />
+    <list default="true" id="ee27bb01-b501-434d-a095-2a908bfa1618" name="Default" comment="- Updated code to v1.3.0 readi for release&#10;-">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/libs/compellent/README.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/libs/compellent/SteelFusionHandoff.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/libs/compellent/api.ps1" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/TODO.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/LogHandle.pm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/Logger.pm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/compellent.ps1" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/compellent_cred.ps1" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/cred_mgmt.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/script_db.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/vadp_cleanup.pl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/vadp_helper.pl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/vadp_setup.pl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/vm_common.pl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/vm_fix.pl" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/README.txt" afterPath="$PROJECT_DIR$/src/libs/compellent/README.txt" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/SteelFusionHandoff.py" afterPath="$PROJECT_DIR$/src/libs/compellent/SteelFusionHandoff.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CHANGES.txt" afterPath="$PROJECT_DIR$/CHANGES.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LICENSE" afterPath="$PROJECT_DIR$/LICENSE" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/README.txt" afterPath="$PROJECT_DIR$/src/libs/compellent_v1/README.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/libs/compellent_v1/SteelFusionHandoff.py" afterPath="$PROJECT_DIR$/src/libs/compellent_v1/SteelFusionHandoff.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/libs/freenas/SteelFusionHandoff.py" afterPath="$PROJECT_DIR$/src/libs/freenas/SteelFusionHandoff.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/libs/hpeva/SteelFusionHandoff.py" afterPath="$PROJECT_DIR$/src/libs/hpeva/SteelFusionHandoff.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/libs/hpmsa_v1/SteelFusionHandoff.py" afterPath="$PROJECT_DIR$/src/libs/hpmsa_v1/SteelFusionHandoff.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/libs/hpmsa_v1/vm_fix.pl" afterPath="$PROJECT_DIR$/src/libs/hpmsa_v1/vm_fix.pl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/libs/vadp/vm_fix.pl" afterPath="$PROJECT_DIR$/src/libs/vadp/vm_fix.pl" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SteelFusionHandoff.iws" />
@@ -44,38 +53,28 @@
       <file leaf-file-name="SteelFusionHandoff.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/libs/hpeva/SteelFusionHandoff.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="26" />
+            <state vertical-scroll-proportion="-12.62963">
+              <caret line="354" column="53" selection-start-line="354" selection-start-column="53" selection-end-line="354" selection-end-column="53" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="SteelFusionHandoff.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/SteelFusionHandoff.py">
+        <entry file="file://$PROJECT_DIR$/src/libs/compellent/SteelFusionHandoff.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-116.666664">
-              <caret line="231" column="66" selection-start-line="231" selection-start-column="66" selection-end-line="231" selection-end-column="66" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SteelFusionHandoff.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/libs/freenas/SteelFusionHandoff.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5588235">
-              <caret line="209" column="56" selection-start-line="209" selection-start-column="56" selection-end-line="209" selection-end-column="56" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="README.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/README.txt">
+        <entry file="file://$PROJECT_DIR$/src/libs/compellent/README.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.448276">
-              <caret line="135" column="83" selection-start-line="135" selection-start-column="83" selection-end-line="135" selection-end-column="83" />
+            <state vertical-scroll-proportion="-25.982143">
+              <caret line="99" column="17" selection-start-line="99" selection-start-column="17" selection-end-line="99" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -84,32 +83,32 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="script_db.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/script_db.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="107" column="49" selection-start-line="107" selection-start-column="49" selection-end-line="107" selection-end-column="49" />
-              <folding>
-                <marker date="1443154910000" expanded="true" signature="1627:1676" placeholder="SELECT name ..sqlite_master..." />
-                <marker date="1443154910000" expanded="true" signature="1770:1781" placeholder="DROP table m..." />
-                <marker date="1443154910000" expanded="true" signature="1818:1868" placeholder="CREATE TABLE..pwd..." />
-                <marker date="1443154910000" expanded="true" signature="2032:2060" placeholder="DELETE FROM ..." />
-                <marker date="1443154910000" expanded="true" signature="2088:2129" placeholder="INSERT INTO ..." />
-                <marker date="1443154910000" expanded="true" signature="2311:2339" placeholder="DELETE FROM ..." />
-                <marker date="1443154910000" expanded="true" signature="2492:2524" placeholder="SELECT host,..pwd..." />
-                <marker date="1443154910000" expanded="true" signature="2750:2789" placeholder="SELECT user,..pwd..." />
-                <marker date="1443154910000" expanded="true" signature="3235:3284" placeholder="SELECT name ..sqlite_master..." />
-                <marker date="1443154910000" expanded="true" signature="3439:3537" placeholder="CREATE TABLE..clone_info..." />
-                <marker date="1443154910000" expanded="true" signature="3683:3737" placeholder="INSERT INTO ..." />
-                <marker date="1443154910000" expanded="true" signature="3943:4024" placeholder="SELECT clone..clone_info..." />
-                <marker date="1443154910000" expanded="true" signature="4249:4283" placeholder="DELETE FROM ..." />
-                <marker date="1443154910000" expanded="true" signature="4664:4713" placeholder="SELECT name ..sqlite_master..." />
-                <marker date="1443154910000" expanded="true" signature="4877:4939" placeholder="CREATE TABLE..snap_to_replay_info..." />
-                <marker date="1443154910000" expanded="true" signature="5073:5124" placeholder="INSERT INTO ..." />
-                <marker date="1443154910000" expanded="true" signature="5323:5406" placeholder="SELECT snap_..snap_to_replay_info..." />
-                <marker date="1443154910000" expanded="true" signature="5605:5654" placeholder="DELETE FROM ..." />
-              </folding>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
+            <state split_layout="FIRST">
+              <first_editor vertical-scroll-proportion="0.45392022">
+                <caret line="24" column="221" selection-start-line="24" selection-start-column="221" selection-end-line="24" selection-end-column="221" />
+                <folding />
+              </first_editor>
+              <second_editor />
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="api.ps1" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/libs/compellent/api.ps1">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.428571">
+              <caret line="24" column="48" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
+              <folding />
+            </state>
+          </provider>
+          <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
+            <state />
           </provider>
         </entry>
       </file>
@@ -142,7 +141,6 @@
         <option value="$PROJECT_DIR$/cred_mgmt.py" />
         <option value="$PROJECT_DIR$/src/compellent_handoff_script_fc.py" />
         <option value="$PROJECT_DIR$/src/script_db.py" />
-        <option value="$PROJECT_DIR$/LICENSE" />
         <option value="$PROJECT_DIR$/src/SteelFusionHandoff.py" />
         <option value="$PROJECT_DIR$/src/run.py" />
         <option value="$PROJECT_DIR$/src/libs/compellent/SteelFusionHandoff.py" />
@@ -158,28 +156,31 @@
         <option value="$PROJECT_DIR$/src/test/hpeva_unittest.py" />
         <option value="$PROJECT_DIR$/tests/hpeva_unittest.py" />
         <option value="$PROJECT_DIR$/src/libs/compellent_v1/compellent_handoff_script_fc.py" />
-        <option value="$PROJECT_DIR$/src/libs/compellent_v1/compellent.ps1" />
         <option value="$PROJECT_DIR$/src/libs/hpmsa_v1/hpmsaTT.py" />
         <option value="$PROJECT_DIR$/src/libs/vadp/vadp_cleanup.pl" />
         <option value="$PROJECT_DIR$/src/libs/hpeva/hpeva_api.py" />
-        <option value="$PROJECT_DIR$/TODO.md" />
         <option value="$PROJECT_DIR$/src/libs/hpmsa_v1/hpmsa.py" />
         <option value="$PROJECT_DIR$/src/libs/hpmsa_v1/SteelFusionHandoff.py" />
         <option value="$PROJECT_DIR$/src/libs/hpmsa_v1/vadp_cleanup.pl" />
         <option value="$PROJECT_DIR$/run.py" />
         <option value="$PROJECT_DIR$/src/libs/hpmsa_v1/hpmsa_ssl.py" />
-        <option value="$PROJECT_DIR$/src/libs/hpeva/SteelFusionHandoff.py" />
         <option value="$PROJECT_DIR$/src/libs/vadp/vm_fix.pl" />
         <option value="$PROJECT_DIR$/src/libs/hpmsa_v1/vadp_helper.pl" />
         <option value="$PROJECT_DIR$/src/libs/hpmsa_v1/vadp_setup.pl" />
         <option value="$PROJECT_DIR$/src/libs/hpmsa_v1/vm_fix.pl" />
         <option value="$PROJECT_DIR$/setup.py" />
+        <option value="$PROJECT_DIR$/src/libs/compellent_v1/test.py" />
+        <option value="$PROJECT_DIR$/src/libs/hpeva/SteelFusionHandoff.py" />
+        <option value="$PROJECT_DIR$/src/libs/freenas/SteelFusionHandoff.py" />
+        <option value="$PROJECT_DIR$/TODO.md" />
+        <option value="$PROJECT_DIR$/src/libs/compellent_v1/compellent.ps1" />
+        <option value="$PROJECT_DIR$/src/libs/compellent_v1/README.txt" />
+        <option value="$PROJECT_DIR$/src/libs/compellent_v1/SteelFusionHandoff.py" />
+        <option value="$PROJECT_DIR$/src/libs/compellent/api.ps1" />
+        <option value="$PROJECT_DIR$/src/libs/compellent/README.txt" />
+        <option value="$PROJECT_DIR$/LICENSE" />
         <option value="$PROJECT_DIR$/CHANGES.txt" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/src/libs/compellent_v1/README.txt" />
-        <option value="$PROJECT_DIR$/src/libs/compellent_v1/test.py" />
-        <option value="$PROJECT_DIR$/src/libs/compellent_v1/SteelFusionHandoff.py" />
-        <option value="$PROJECT_DIR$/src/libs/freenas/SteelFusionHandoff.py" />
       </list>
     </option>
   </component>
@@ -268,28 +269,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SteelFusionHandoff" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SteelFusionHandoff" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="freenas" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scratches" />
@@ -329,11 +308,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/libs/compellent" />
       <recent name="$PROJECT_DIR$/src/libs/vadp" />
       <recent name="$PROJECT_DIR$/src/libs/hpmsa_v1" />
       <recent name="$PROJECT_DIR$/src/libs/freenas" />
       <recent name="$PROJECT_DIR$/src/libs/netapp_v1" />
-      <recent name="$PROJECT_DIR$/src/libs/hp3par_v1" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -742,7 +721,13 @@
       <option name="project" value="LOCAL" />
       <updated>1455926531583</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="- Added FreeNAS snapshot support&#10;- Bugfix Compellent snapshot removal not working&#10;- Bugfix HP MSA  set LUN ID max to 512">
+      <created>1461257655548</created>
+      <option name="number" value="00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1461257655548</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TodoView">
@@ -760,26 +745,26 @@
     <layout>
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21234567" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37410071" sideWeight="0.49713877" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32819074" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32967034" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4516129" sideWeight="0.5028612" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33209875" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23002422" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32819074" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32967034" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18960245" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18960245" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32805756" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4516129" sideWeight="0.5028612" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33209875" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33093524" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3467626" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23002422" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33093524" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -812,7 +797,8 @@
     <MESSAGE value="- Updated README" />
     <MESSAGE value="- Updated hpmsa request timeout to 600s to better handle slower SAN responses" />
     <MESSAGE value="- Updated HP MSA to handle simultaneous snapshots.&#10;- Updated Readme warning regarding ESXi 5.5 Update3 supportability." />
-    <option name="LAST_COMMIT_MESSAGE" value="- Updated HP MSA to handle simultaneous snapshots.&#10;- Updated Readme warning regarding ESXi 5.5 Update3 supportability." />
+    <MESSAGE value="- Added FreeNAS snapshot support&#10;- Bugfix Compellent snapshot removal not working&#10;- Bugfix HP MSA  set LUN ID max to 512" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Added FreeNAS snapshot support&#10;- Bugfix Compellent snapshot removal not working&#10;- Bugfix HP MSA  set LUN ID max to 512" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -821,27 +807,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/script_db.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="125" column="0" selection-start-line="125" selection-start-column="0" selection-end-line="125" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/log/.gitkeep">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/var/.gitkeep">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -849,48 +814,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/LICENSE">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3144654">
-          <caret line="10" column="1" selection-start-line="10" selection-start-column="1" selection-end-line="10" selection-end-column="1" />
-        </state>
-      </provider>
-      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/libs/vadp/LogHandle.pm">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.27422303">
           <caret line="10" column="1" selection-start-line="10" selection-start-column="1" selection-end-line="10" selection-end-column="1" />
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/cred_mgmt.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33199194">
-          <caret line="33" column="27" selection-start-line="33" selection-start-column="27" selection-end-line="33" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/compellent.ps1">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.51282054">
-          <caret line="32" column="27" selection-start-line="32" selection-start-column="27" selection-end-line="32" selection-end-column="27" />
-        </state>
-      </provider>
-      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/compellent_cred.ps1">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.74358976">
-          <caret line="31" column="1" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
-        </state>
-      </provider>
-      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
-        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/hpeva_unittest.py">
@@ -931,29 +859,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vadp_helper.pl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.8">
-          <caret line="124" column="18" selection-start-line="124" selection-start-column="18" selection-end-line="124" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TODO.md">
-      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
-        <state />
-      </provider>
-      <provider editor-type-id="MultiMarkdownFxHtmlEditor">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="9" selection-start-line="14" selection-start-column="9" selection-end-line="14" selection-end-column="9" />
-        </state>
-      </provider>
-      <provider editor-type-id="MarkdownPreviewEditor">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/configure.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -992,13 +897,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vm_common.pl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8265896">
-          <caret line="360" column="0" selection-start-line="360" selection-start-column="0" selection-end-line="360" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/libs/hpmsa_v1/README.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1027,34 +925,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="304" column="0" selection-start-line="304" selection-start-column="0" selection-end-line="304" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/vadp/snapshot_helper.pl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.8959537">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vadp_cleanup.pl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.433526">
-          <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vadp_setup.pl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.30057803">
-          <caret line="134" column="32" selection-start-line="134" selection-start-column="32" selection-end-line="134" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vm_fix.pl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.028901733">
-          <caret line="30" column="10" selection-start-line="0" selection-start-column="0" selection-end-line="292" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1100,13 +970,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CHANGES.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6690141">
-          <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.31390134">
@@ -1143,58 +1006,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
-        <state />
-      </provider>
-      <provider editor-type-id="MultiMarkdownFxHtmlEditor">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45356372">
-          <caret line="32" column="228" selection-start-line="32" selection-start-column="228" selection-end-line="32" selection-end-column="228" />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
-        <state split_layout="FIRST">
-          <first_editor vertical-scroll-proportion="0.32315978">
-            <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
-            <folding />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-      <provider editor-type-id="MarkdownPreviewEditor">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/script_db.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="107" column="49" selection-start-line="107" selection-start-column="49" selection-end-line="107" selection-end-column="49" />
-          <folding>
-            <marker date="1443154910000" expanded="true" signature="1627:1676" placeholder="SELECT name ..sqlite_master..." />
-            <marker date="1443154910000" expanded="true" signature="1770:1781" placeholder="DROP table m..." />
-            <marker date="1443154910000" expanded="true" signature="1818:1868" placeholder="CREATE TABLE..pwd..." />
-            <marker date="1443154910000" expanded="true" signature="2032:2060" placeholder="DELETE FROM ..." />
-            <marker date="1443154910000" expanded="true" signature="2088:2129" placeholder="INSERT INTO ..." />
-            <marker date="1443154910000" expanded="true" signature="2311:2339" placeholder="DELETE FROM ..." />
-            <marker date="1443154910000" expanded="true" signature="2492:2524" placeholder="SELECT host,..pwd..." />
-            <marker date="1443154910000" expanded="true" signature="2750:2789" placeholder="SELECT user,..pwd..." />
-            <marker date="1443154910000" expanded="true" signature="3235:3284" placeholder="SELECT name ..sqlite_master..." />
-            <marker date="1443154910000" expanded="true" signature="3439:3537" placeholder="CREATE TABLE..clone_info..." />
-            <marker date="1443154910000" expanded="true" signature="3683:3737" placeholder="INSERT INTO ..." />
-            <marker date="1443154910000" expanded="true" signature="3943:4024" placeholder="SELECT clone..clone_info..." />
-            <marker date="1443154910000" expanded="true" signature="4249:4283" placeholder="DELETE FROM ..." />
-            <marker date="1443154910000" expanded="true" signature="4664:4713" placeholder="SELECT name ..sqlite_master..." />
-            <marker date="1443154910000" expanded="true" signature="4877:4939" placeholder="CREATE TABLE..snap_to_replay_info..." />
-            <marker date="1443154910000" expanded="true" signature="5073:5124" placeholder="INSERT INTO ..." />
-            <marker date="1443154910000" expanded="true" signature="5323:5406" placeholder="SELECT snap_..snap_to_replay_info..." />
-            <marker date="1443154910000" expanded="true" signature="5605:5654" placeholder="DELETE FROM ..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/libs/hpmsa_v1/SteelFusionHandoff.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4918033">
@@ -1211,10 +1022,117 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/README.txt">
+    <entry file="file://$PROJECT_DIR$/src/libs/freenas/SteelFusionHandoff.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.448276">
-          <caret line="135" column="83" selection-start-line="135" selection-start-column="83" selection-end-line="135" selection-end-column="83" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="26" column="38" selection-start-line="26" selection-start-column="38" selection-end-line="26" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TODO.md">
+      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+        <state />
+      </provider>
+      <provider editor-type-id="MultiMarkdownFxHtmlEditor">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="9" selection-start-line="14" selection-start-column="9" selection-end-line="14" selection-end-column="9" />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
+        <state split_layout="FIRST">
+          <first_editor vertical-scroll-proportion="0.392022">
+            <caret line="19" column="182" selection-start-line="19" selection-start-column="182" selection-end-line="19" selection-end-column="182" />
+            <folding />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+      <provider editor-type-id="MarkdownPreviewEditor">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/script_db.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="136" column="11" selection-start-line="136" selection-start-column="11" selection-end-line="136" selection-end-column="11" />
+          <folding>
+            <marker date="1443242629000" expanded="true" signature="-1:-1" placeholder="SELECT name ..sqlite_master..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/vadp/snapshot_helper.pl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vm_fix.pl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.36445013">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vm_common.pl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="6.9053707">
+          <caret line="360" column="0" selection-start-line="360" selection-start-column="0" selection-end-line="360" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vadp_setup.pl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.5703325">
+          <caret line="134" column="32" selection-start-line="134" selection-start-column="32" selection-end-line="134" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vadp_cleanup.pl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28772378">
+          <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/vadp/vadp_helper.pl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="10.927153">
+          <caret line="550" column="72" selection-start-line="550" selection-start-column="68" selection-end-line="550" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/hpeva/SteelFusionHandoff.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.62963">
+          <caret line="354" column="53" selection-start-line="354" selection-start-column="53" selection-end-line="354" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/compellent/SteelFusionHandoff.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/compellent/api.ps1">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.428571">
+          <caret line="24" column="48" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
           <folding />
         </state>
       </provider>
@@ -1222,28 +1140,59 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/compellent_v1/SteelFusionHandoff.py">
+    <entry file="file://$PROJECT_DIR$/src/libs/compellent/README.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-116.666664">
-          <caret line="231" column="66" selection-start-line="231" selection-start-column="66" selection-end-line="231" selection-end-column="66" />
+        <state vertical-scroll-proportion="-25.982143">
+          <caret line="99" column="17" selection-start-line="99" selection-start-column="17" selection-end-line="99" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CHANGES.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.057544757">
+          <caret line="3" column="45" selection-start-line="3" selection-start-column="45" selection-end-line="3" selection-end-column="45" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/hpeva/SteelFusionHandoff.py">
+    <entry file="file://$PROJECT_DIR$/LICENSE">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="26" />
+        <state vertical-scroll-proportion="0.03984064">
+          <caret line="2" column="20" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
           <folding />
         </state>
       </provider>
+      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/freenas/SteelFusionHandoff.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5588235">
-          <caret line="209" column="56" selection-start-line="209" selection-start-column="56" selection-end-line="209" selection-end-column="56" />
-          <folding />
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+        <state />
+      </provider>
+      <provider editor-type-id="MultiMarkdownFxHtmlEditor">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.45356372">
+          <caret line="32" column="228" selection-start-line="32" selection-start-column="228" selection-end-line="32" selection-end-column="228" />
         </state>
+      </provider>
+      <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
+        <state split_layout="FIRST">
+          <first_editor vertical-scroll-proportion="0.45392022">
+            <caret line="24" column="221" selection-start-line="24" selection-start-column="221" selection-end-line="24" selection-end-column="221" />
+            <folding />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+      <provider editor-type-id="MarkdownPreviewEditor">
+        <state />
       </provider>
     </entry>
   </component>
