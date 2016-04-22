@@ -2,7 +2,7 @@
 __author__ = 'Laurynas Kavaliauskas'
 ###############################################################################
 #
-# (C) Copyright 2015 Riverbed Technology, Inc
+# (C) Copyright 2016 Riverbed Technology, Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
