@@ -9,13 +9,13 @@ Current snapshot Handoff Scripts support ESXi Proxy servers up to version 5.5 Up
 This document describes how to setup handoff host with SteelFusion handoff scripts.  
 This document and all the scripts mentioned here are a property of  
 Riverbed Technology and must not be distributed without proper licenses.  
-(C) Copyright 2015 Riverbed Technology, Inc  
+(C) Copyright 2016 Riverbed Technology, Inc  
 All rights reserved.  
 
 ---------------------------------------------------
 # Script Version
 ---------------------------------------------------
-v1.3.0-04222016
+v1.4.0-05312016
 
 ---------------------------------------------------
 # Hardware Tested
@@ -27,10 +27,12 @@ v1.3.0-04222016
 |nimble_v1      |Nimble                 |CS220G/v2.0.7                      |iSCSI  |VMware     |Unofficial PowerShell                      |3.6.0/3.6.0                | Unknown   |02/06/2015     |API https://github.com/jrich523/NimblePowerShell |
 |pure_v1        |Pure Storage           |FA-400/4.014                       |FC     |VMware     |Powershell API v4                          |3.6.0/3.6.0                |NetBackup  |02/15/2015     |There is a REST API, next iteration should be refactored to use REST. PowerShell API: http://blog.purestorage.com/faq-about-the-new-pure-storage-powershell-sdk/ |
 |hp3par_v1      |3PAR                   |7200 / v3.1.3 MU1                  |FC     |VMware     |Mgmt Console CLI 4.6.1 and 3PAR Client v3.3|3.6.0/3.6.0                |n/a        |07/13/2015     |    	No Proxy mount functionality|
-|compellent     |Compellent	            |4020 and 8000/6.5.20               |iSCSI	|VMware	    |Storage Center Command Set 7.01.01.002	    |4.1/4.0 and 4.2.0a         |VEEAM	    |03/26/2014     |1. SKIP_VM_REGISTRATION=1; Works with VMware ESXi5.5update3|
+|compellent     |Compellent	            |4020 and 8000/6.5.20               |iSCSI	|VMware	    |Storage Center Command Set 7.01.01.002	    |4.1/4.0 and 4.2.0a         |VEEAM	    |04/22/2016     |1. SKIP_VM_REGISTRATION=1; Works with VMware ESXi5.5update3|
 |hpeva          |HP                     |EVA 8400, HSV340, 10001000 Firmware|FC	    |VMware	    |HP P6000 SSSU CLI v10.3.4	                |3.6.0/3.6.0	            |VEEAM	    |12/01/2015 	|1. Requires -system argument; 2. SKIP_VM_REGISTRATION=1; 3. Bugfix: LUN mount on ESXi; 4. Bugfix: snapshot cleanup; 5.Doc: http://h20566.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c03375122&lang=en-us&cc=us; 6. HP SSSU:https://h20392.www2.hpe.com/portal/swdepot/displayProductInfo.do?productNumber=P6000_CV10.3|
-|hpmsa_v1       |HP                     |MSA	P2000 G3/Bundle v. TS201R015|FC	    |VMware	    |SOAP Web API	                            |3.6.0/3.6.0 and 4.1.0/4.1.0|CA Arcserve|12/16/2015     |1. Upgraded VADP to version 4.1.0|
-|hpmsa_v1       |HP                     |MSA	P2040 G3/Firmware  GL210R004|FC	    |VMware	    |SOAP Web API	                            |4.0.0/4.1.0 and 4.1.0/4.1.0|CA Arcserve|12/16/2015     |1. Upgraded VADP to version 4.1.0|
+|hpmsa_v1       |HP                     |MSA	P2000 G3/Bundle v. TS201R015|FC	    |VMware	    |SOAP Web API	                            |3.6.0/3.6.0 and 4.1.0/4.1.0|CA Arcserve|03/01/2016     |1. Upgraded VADP to version 4.1.0|
+|hpmsa_v1       |HP                     |MSA	P2040 G3/Firmware  GL210R004|FC	    |VMware	    |SOAP Web API	                            |4.0.0/4.1.0 and 4.1.0/4.1.0|CA Arcserve|04/22/2016     |1. Upgraded VADP to version 4.1.0|
+|hprmc          |HP                     |RMC	with 3PAP SAN               |FC	    |Integrated |SOAP Web API	                            |4.0.0/4.0.0 and 4.3.0/4.3.0|N/A        |05/19/2016     |   |
+|freenas        |FreeNAS                |9.3                                |iSCSI	|n/a        |REST API	                                |4.3.0/4.3.0                |N/A        |05/19/2016     |1. Only snapshots implemented, no mounting. 2. Experimental, tested for development environments only.  |
 
 ---------------------------------------------------
 # Preparing the Handoff Host
@@ -91,7 +93,8 @@ proxy backup operation for VMware luns.
 The script arguments are:  
 array-model : the type of the array we are running scripts against. Reference supported array table for the correct array name.  
 work-dir : WORK_DIR for handoff  
-storage-array : storage array ip/hotname  
+array-model : array name, see 'Hadware Tested' table for the correct name
+array : storage array ip/hotname  
 system: storage array system, this key is only for EVA managed arrays  
 proxy-host : ESX Proxy Server ip/hotname  
 access-group : SAN Initiator group to which proxy host is mapped  
@@ -130,7 +133,7 @@ Any SAN library that has _v1 in the folder name, has all working scripts and dup
    Append this at the end:  
    'C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\bin;C:\Program Files (x86)\VMware\VMware vSphere CLI\Perl\lib;'  
    Press OK until you exit the dailogue boxes.
-4. Install the HP SSSU SDK.
+4. Install the appropriate SAN management SDK, if required. See 'Hadware Tested' table.
 5. Create a directory 'C:\rvbd_handoff_scripts'.  
    Copy all the files in the Handoff Scripts package to this directory.  
    To ensure consistency, make sure the scripts are marked read-only.

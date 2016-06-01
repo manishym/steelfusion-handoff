@@ -438,7 +438,7 @@ def get_option_parser():
     # script arguments from the Granite Core.
     parser.add_option("--array",
                       type="string",
-                      default="chief-netapp1",
+                      default="compellent",
                       help="storage array ip address or dns name")
     parser.add_option("--username",
                       type="string",
