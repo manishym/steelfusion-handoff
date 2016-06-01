@@ -2,3 +2,10 @@ var/*
 !var/.gitkeep
 log/*
 !log/.gitkeep
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
